@@ -108,7 +108,7 @@ The modernization roadmap must address verified issues rather than preserve them
 - request DTOs and product/category business inputs lack consistent server-side validation, and some controllers return raw exception messages;
 - the API has no application test project or central production exception/problem-details policy;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
-- the GitHub Actions workflow is now at repository root but still needs valid target-path quality gates in Phase 1.5;
+- CI runs repository-root API and web jobs against their explicit target paths; it currently covers API restore/Release build and web frozen install/typecheck/lint/build, while application tests will be added with their supporting test projects;
 
 This list is intentionally architectural rather than a complete audit. The roadmap/audit phase may discover additional implementation defects.
 

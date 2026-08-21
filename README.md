@@ -84,7 +84,7 @@ These are the technologies verified in the repository today. The API requires a 
 | `apps/web/`            | React/TypeScript/Vite web foundation and future storefront/admin UI. |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
-| `.github/workflows/`   | Repository-level CI workflows; quality gates are refined in Phase 1.5. |
+| `.github/workflows/`   | Repository-level CI: API restore/Release build and web frozen install/typecheck/lint/build gates. |
 | `ROADMAP.md`           | Execution order, audit findings, and completion state.              |
 | `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 

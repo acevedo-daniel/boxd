@@ -1,23 +1,51 @@
-name: .NET CI
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  api:
+    name: API
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v7
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '9.0.x'
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal 
+          dotnet-version: 10.0.x
+      - name: Restore API dependencies
+        run: dotnet restore e-commerce-api.sln
+      - name: Build API
+        run: dotnet build e-commerce-api.sln --configuration Release --no-restore
+
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.x
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install web dependencies
+        run: corepack pnpm install --frozen-lockfile
+      - name: Type-check web
+        run: corepack pnpm run typecheck
+      - name: Lint web
+        run: corepack pnpm run lint
+      - name: Build web
+        run: corepack pnpm run build
