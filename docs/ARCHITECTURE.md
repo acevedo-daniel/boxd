@@ -111,7 +111,6 @@ The modernization roadmap must address verified issues rather than preserve them
 - request DTOs and product/category business inputs lack consistent server-side validation, and some controllers return raw exception messages;
 - the API has no application test project or central production exception/problem-details policy;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
-- the repository contains legacy documentation and IDE artefacts that require hygiene cleanup;
 - the existing GitHub Actions directory is nested under the API rather than at repository root;
 - the frontend contains hard-coded local API assumptions that must become environment-aware configuration.
 - legacy SPA catalogue routes are protected by a local-storage route guard even though BOXD requires visitor browsing.

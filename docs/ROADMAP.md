@@ -185,10 +185,12 @@ Create the clean monorepo shape and supported runtime/tooling foundation without
 
 ### 1.1 Repository hygiene
 
-- [ ] Remove tracked IDE/build/local artifacts such as `.vs/`.
-- [ ] Remove or merge obsolete legacy docs after preserving unique useful knowledge.
-- [ ] Update root `.gitignore` for the actual .NET/Node/IDE/environment artifacts used by BOXD.
-- [ ] Add/update `.editorconfig` only if it provides useful shared conventions.
+- [x] Remove tracked IDE/build/local artifacts such as `.vs/`.
+- [x] Remove or merge obsolete legacy docs after preserving unique useful knowledge.
+- [x] Update root `.gitignore` for the actual .NET/Node/IDE/environment artifacts used by BOXD.
+- [-] Do not add `.editorconfig`: the legacy codebase is due for intentional replacement, so no shared formatting convention is justified yet.
+
+**Execution record — 2026-08-20:** Removed 198 tracked IDE/build/user-setting files from the legacy API (`.vs/`, `bin/`, `obj/`, and `*.csproj.user`). Consolidated the valid local-secret setup into the root README and removed obsolete API/SPA subproject documentation and manual SQL seed notes. `.gitignore` now protects Visual Studio state, project user settings, and local application configuration files.
 
 ### 1.2 Target repository shape
 
