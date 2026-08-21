@@ -4,7 +4,7 @@
 
 ## Status
 
-Phases 0 (audit and baseline), 1 (repository/toolchain foundation), 2.1 (API structure simplification), and 2.2 (configuration and authentication) are complete. The repository still contains legacy product behavior; Phase 2.3 is the next modernization task.
+Phases 0 (audit and baseline), 1 (repository/toolchain foundation), 2.1 (API structure simplification), 2.2 (configuration and authentication), and 2.3 (authorization) are complete. The repository still contains legacy product behavior; Phase 2.4 is the next modernization task.
 
 This document deliberately distinguishes between:
 
@@ -86,6 +86,14 @@ ASP.NET Core controllers
 
 The remaining legacy flow is QR token generation/validation, scheduled for removal in Phase 2.6.
 
+### Current authorization boundary
+
+- The role model is deliberately limited to `Customer` and `Administrator`.
+- New registrations and the `User` model default to `Customer`; registration accepts no role selection.
+- The API issues the role in the JWT and configures `AdministratorOnly`, which requires an authenticated user with the `Administrator` role.
+- Product and category create, update, and delete actions require that policy server-side. Their read actions remain public.
+- The current API has no customer-owned resource endpoint. When order/account resources are added, ownership must be derived from `ClaimTypes.NameIdentifier` on the authenticated principal; a client-supplied owner identifier must not authorize access.
+
 ### Current client architecture
 
 - **Rendering:** client-side React SPA.
@@ -101,12 +109,11 @@ The web foundation has a storefront layout boundary. An administration layout wi
 
 The modernization roadmap must address verified issues rather than preserve them by default. Important baseline concerns include:
 
-- authorization boundaries need to be enforced explicitly for administrator operations;
-- product/category mutations currently require only an authenticated user, not an Administrator role;
 - JWT signing keys and local database configuration are supplied through User Secrets or environment/secret configuration; startup rejects missing/invalid connection, signing-key, issuer, audience, lifetime, and CORS configuration rather than using fallbacks;
 - request DTOs and product/category business inputs lack consistent server-side validation, and some controllers return raw exception messages;
-- focused unit tests cover configuration containment/validation and supported password hashing; API integration-test infrastructure and central production exception/problem-details policy remain pending;
+- focused unit tests cover configuration containment/validation, supported password hashing, and authorization policy/controller boundaries; API integration-test infrastructure and central production exception/problem-details policy remain pending;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
+- customer-owned order/account endpoints do not yet exist, so their identity-derived ownership enforcement will be implemented with those vertical slices;
 - CI runs repository-root API and web jobs against their explicit target paths; it currently covers API restore/Release build and web frozen install/typecheck/lint/build. The new unit tests run locally; adding test execution to CI remains part of the Phase 2.5 test-foundation task;
 
 This list is intentionally architectural rather than a complete audit. The roadmap/audit phase may discover additional implementation defects.

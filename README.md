@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 2.2 is complete: the API has explicit environment configuration validation, standard Identity password hashing, and no password-recovery/SMTP flow.**
+**Phase 2.3 is complete: the API has explicit environment configuration validation, standard Identity password hashing, and server-enforced Customer/Administrator catalogue authorization.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 
@@ -41,7 +41,7 @@ The legacy application currently provides:
 
 - an ASP.NET Core REST API;
 - Entity Framework Core with SQL Server;
-- JWT-based authentication;
+- JWT-based authentication with Customer/Administrator authorization;
 - product and category management;
 - QR/Box Club functionality from the academic version;
 - a React + TypeScript + Vite foundation with a minimal storefront shell.
@@ -82,7 +82,7 @@ These are the technologies verified in the repository today. The API requires a 
 | ---------------------- | ------------------------------------------------------------------- |
 | `apps/api/`            | Legacy ASP.NET Core API and persistence layer.                      |
 | `apps/web/`            | React/TypeScript/Vite web foundation and future storefront/admin UI. |
-| `tests/Boxd.Api.Tests/` | Focused configuration-containment and password-hashing unit tests. |
+| `tests/Boxd.Api.Tests/` | Focused configuration, password-hashing, and authorization unit tests. |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
 | `.github/workflows/`   | Repository-level CI: API restore/Release build and web frozen install/typecheck/lint/build gates. |
@@ -123,7 +123,7 @@ cd apps/api
 dotnet test Boxd.Api.sln --configuration Release
 ```
 
-The current tests cover configuration containment/validation and supported password hashing. PostgreSQL-backed API integration tests and their CI gate are scheduled for Phase 2.5.
+The current tests cover configuration containment/validation, supported password hashing, and authorization-policy regression checks. PostgreSQL-backed API integration tests and their CI gate are scheduled for Phase 2.5.
 
 ### Web
 

@@ -1,4 +1,5 @@
 using Boxd.Api.Features.Products.Contracts;
+using Boxd.Api.Features.Auth.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ public sealed class ProductsController(ProductService productService) : Controll
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<ActionResult<ProductResponseDto>> PostProduct([FromBody] CreateProductDto createProductDto)
     {
         try
@@ -38,7 +39,7 @@ public sealed class ProductsController(ProductService productService) : Controll
     }
 
     [HttpPut("{id}")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<IActionResult> PutProduct(int id, [FromBody] UpdateProductDto updateProductDto)
     {
         if (id != updateProductDto.Id)
@@ -62,7 +63,7 @@ public sealed class ProductsController(ProductService productService) : Controll
     }
 
     [HttpDelete("{id}")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         try
