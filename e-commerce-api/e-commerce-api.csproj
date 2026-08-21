@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>e_commerce_api</RootNamespace>
+    <UserSecretsId>boxd-e-commerce-api-development</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

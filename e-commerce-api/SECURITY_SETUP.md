@@ -1,81 +1,35 @@
-# 🔐 Configuración de Seguridad - THE BOX API
+# Legacy API security configuration
 
-## ⚠️ Importante: Configuración de Credenciales
+The tracked `appsettings*.json` files intentionally contain no signing key, SMTP credentials, or usable database connection string. Do not add them back.
 
-Este archivo contiene información sobre cómo configurar de forma segura las credenciales de la aplicación.
+## Local development
 
-### 📝 Configuración Requerida
+The API project has a User Secrets identifier. From `e-commerce-api/`, set the required local values without committing them:
 
-Antes de ejecutar la aplicación, debes configurar las siguientes credenciales en `appsettings.json`:
-
-#### 1. **Configuración SMTP (Email)**
-```json
-"SmtpSettings": {
-  "Host": "smtp.gmail.com",
-  "Port": 587,
-  "EnableSsl": true,
-  "User": "tu-email@gmail.com",
-  "Password": "tu-contraseña-de-aplicación",
-  "From": "tu-email@gmail.com"
-}
+```powershell
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<local SQL Server connection string>"
+dotnet user-secrets set "JwtSettings:SecretKey" "<random signing key of at least 32 bytes>"
 ```
 
-#### 2. **Configuración JWT**
-```json
-"JwtSettings": {
-  "SecretKey": "tu-clave-secreta-muy-larga-y-segura",
-  "Issuer": "e-commerce-api",
-  "Audience": "e-commerce-client",
-  "ExpirationHours": 24
-}
+The legacy password-recovery endpoint also needs the following values only when it is deliberately exercised:
+
+```powershell
+dotnet user-secrets set "SmtpSettings:Host" "<SMTP host>"
+dotnet user-secrets set "SmtpSettings:User" "<SMTP user>"
+dotnet user-secrets set "SmtpSettings:Password" "<SMTP password or app password>"
+dotnet user-secrets set "SmtpSettings:From" "<sender address>"
 ```
 
-### 🔑 Cómo Obtener Contraseña de Aplicación de Gmail
+`SmtpSettings:Port` and `SmtpSettings:EnableSsl` may be supplied the same way when their defaults are unsuitable.
 
-1. **Habilita la verificación en dos pasos** en tu cuenta de Google
-2. Ve a **Configuración de la cuenta de Google**
-3. Selecciona **Seguridad**
-4. En "Iniciar sesión en Google", selecciona **Contraseñas de aplicación**
-5. Genera una nueva contraseña de aplicación para "Correo"
-6. Usa esta contraseña en la configuración SMTP
+## Environment configuration
 
-### 🛡️ Seguridad
+Deployment environments must provide the same values through their secret store or environment configuration, for example `ConnectionStrings__DefaultConnection` and `JwtSettings__SecretKey`. Never put replacement values in tracked JSON files, documentation, CI variables, or command history.
 
-- ✅ **Nunca subas credenciales reales a Git**
-- ✅ **Usa variables de entorno en producción**
-- ✅ **Cambia las claves por defecto**
-- ✅ **Usa contraseñas de aplicación, no tu contraseña principal**
+The API fails at startup when its connection string, JWT key, issuer, audience, allowed origins, or token lifetime are missing or invalid. This is intentional.
 
-### 📋 Template de Configuración
+## Rotation requirement
 
-Usa `appsettings.template.json` como base para tu configuración:
+The GitHub remote is public and the former configuration files are present in repository history. Any JWT signing key or SMTP credential that was valid when committed must be rotated outside the repository before further publication or deployment. No history rewrite or credential rotation is performed by this change.
 
-```bash
-cp appsettings.template.json appsettings.json
-# Luego edita appsettings.json con tus credenciales reales
-```
-
-### 🚀 Variables de Entorno (Recomendado para Producción)
-
-Para mayor seguridad, considera usar variables de entorno:
-
-```bash
-# En Windows
-set SMTP_USER=tu-email@gmail.com
-set SMTP_PASSWORD=tu-app-password
-
-# En Linux/Mac
-export SMTP_USER=tu-email@gmail.com
-export SMTP_PASSWORD=tu-app-password
-```
-
-### 📞 Soporte
-
-Si tienes problemas con la configuración:
-1. Verifica que tu cuenta de Gmail tenga verificación en dos pasos habilitada
-2. Asegúrate de usar una contraseña de aplicación, no tu contraseña principal
-3. Verifica que el puerto 587 esté abierto en tu firewall
-
----
-
-**⚠️ Recuerda:** Nunca compartas tus credenciales reales en el código fuente. 
+Password reset/SMTP is legacy functionality scheduled for removal in Phase 2; do not expand it while this migration baseline remains in place.
