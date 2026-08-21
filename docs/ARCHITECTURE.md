@@ -126,11 +126,13 @@ boxd/
 │  ├─ api/
 │  └─ web/
 ├─ docs/
+│  ├─ PROJECT.md
+│  ├─ ARCHITECTURE.md
+│  └─ ROADMAP.md
 ├─ tests/              # only when separate test projects justify it
 ├─ .github/
 │  └─ workflows/
 ├─ README.md
-├─ ROADMAP.md
 └─ AGENTS.md
 ```
 
@@ -156,7 +158,7 @@ This is an organizational constraint, not permission to introduce DDD, CQRS, Med
 ### Persistence direction
 
 - Entity Framework Core remains the primary data-access technology.
-- SQL Server remains the default relational database for the modernization unless deployment constraints produce an explicit later decision.
+- PostgreSQL is the selected relational database for the modernization. The legacy SQL Server schema remains current only until the planned Phase 2 provider migration; a minimal Docker Compose service will make PostgreSQL reproducible for local development.
 - EF Core migrations own schema evolution.
 - Persistence abstractions should exist only where they add a real boundary or reusable domain-specific query behavior.
 - Generic repository wrappers around `DbContext`/`DbSet` operations are not a target requirement.
@@ -230,6 +232,10 @@ Expected layers as the modernization matures:
 - CI checks at repository root for API and web build/quality gates.
 
 These layers should be materialized only as their supporting implementation exists. Detailed commands belong in dedicated testing/development documentation only if the workflow becomes large enough to justify those files.
+
+### Approved deployment direction
+
+Phase 9 will deploy the React/Vite SPA to Vercel, the ASP.NET Core API as a Docker-based Render web service, and the PostgreSQL database on Neon. This is a target deployment decision, not a claim about the current runtime. Production secrets remain in provider-managed configuration: the Vercel build receives only the public API URL, and the API receives database/authentication secrets through Render. PostgreSQL migrations use Neon’s direct connection endpoint and are applied separately from API startup.
 
 ## Trade-offs
 

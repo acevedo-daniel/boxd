@@ -42,9 +42,11 @@ boxd/
 │  ├─ api/              # legacy ASP.NET Core 10 API
 │  └─ web/              # React/Vite TypeScript foundation
 ├─ docs/
+│  ├─ PROJECT.md
+│  ├─ ARCHITECTURE.md
+│  └─ ROADMAP.md
 ├─ .github/
 ├─ README.md
-├─ ROADMAP.md
 └─ AGENTS.md
 ```
 
@@ -96,7 +98,7 @@ React + TypeScript web
         -> HTTP/OpenAPI
 ASP.NET Core API
         -> EF Core
-SQL Server
+PostgreSQL
 ```
 
 Guardrails:

@@ -85,7 +85,7 @@ These are the technologies verified in the repository today. The API requires a 
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
 | `.github/workflows/`   | Repository-level CI: API restore/Release build and web frozen install/typecheck/lint/build gates. |
-| `ROADMAP.md`           | Execution order, audit findings, and completion state.              |
+| `docs/ROADMAP.md`      | Execution order, audit findings, and completion state.              |
 | `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 
 The applications now occupy their target monorepo paths. The API remains legacy; the web application is a typed foundation awaiting its catalogue, identity, cart, and administration vertical slices.
@@ -141,4 +141,4 @@ It is now being rebuilt and maintained by Daniel Acevedo as a personal portfolio
 
 - [Project](docs/PROJECT.md) — product purpose, scope, actors, workflows, domain concepts, and durable business rules.
 - [Architecture](docs/ARCHITECTURE.md) — current system boundaries, known baseline concerns, modernization constraints, invariants, and trade-offs.
-- [Roadmap](ROADMAP.md) — execution order, audit findings, and completion state.
+- [Roadmap](docs/ROADMAP.md) — execution order, audit findings, and completion state.

@@ -6,6 +6,8 @@
 
 This file owns **execution order and completion state**.
 
+It is a temporary execution aid, not a permanent project document. Phase 11 removes it after its durable facts have been verified in their canonical documentation.
+
 It does not redefine product or architecture:
 
 - `docs/PROJECT.md` — product scope, actors, workflows, domain semantics, and business rules.
@@ -55,6 +57,12 @@ A phase is complete only after:
 - the completed phase is audited before moving on.
 
 Do not implement future phases early. Do not add real payments, reviews, wishlists, marketplace behavior, AI recommendations, loyalty systems, multi-currency, shipping integrations, microservices, or other out-of-scope features before v1 is frozen.
+
+## Branch naming aid
+
+Use one short-lived branch and one pull request for each coherent change group. Start from current `main`, merge only after relevant checks pass, then delete the branch. The suggested branches appear in each future phase beside the tasks they cover.
+
+Use lowercase kebab case with a conventional prefix: `feat/`, `refactor/`, `test/`, `chore/`, `docs/`, or `fix/`. The names are guidance, not extra tasks: split a group only when it becomes too large to review confidently.
 
 ---
 
@@ -202,9 +210,9 @@ boxd/
 │  ├─ api/
 │  └─ web/
 ├─ docs/
+│  └─ ROADMAP.md
 ├─ .github/
 ├─ README.md
-├─ ROADMAP.md
 └─ AGENTS.md
 ```
 
@@ -213,7 +221,7 @@ boxd/
 - [x] Move useful workflows to root `.github/workflows/`.
 - [x] Remove ambiguous legacy application directories after intentional migration.
 
-**Execution record — 2026-08-20:** Moved the legacy API and SPA source to `apps/api/` and `apps/web/`, moved the workflow to `.github/workflows/ci.yml`, and moved this roadmap to the repository root. The workflow's commands were deliberately not redesigned here; Phase 1.5 owns CI quality gates.
+**Execution record — 2026-08-20:** Moved the legacy API and SPA source to `apps/api/` and `apps/web/`, moved the workflow to `.github/workflows/ci.yml`, and established `docs/ROADMAP.md` as the canonical roadmap location. The workflow's commands were deliberately not redesigned here; Phase 1.5 owns CI quality gates.
 
 ### 1.3 API upgrade
 
@@ -258,7 +266,7 @@ Do not mechanically convert the legacy JSX UI.
 - [x] Update `ARCHITECTURE.md` so completed structure/runtime changes become current architecture.
 - [x] Update `AGENTS.md` commands and repository shape.
 - [x] Update `README.md` status/setup.
-- [ ] Create `docs/DEVELOPMENT.md` only if local workflow no longer fits cleanly in README.
+- [-] `docs/DEVELOPMENT.md` is not required: the current local workflow fits in README.
 
 ## Exit criteria
 
@@ -278,6 +286,16 @@ Do not mechanically convert the legacy JSX UI.
 
 Turn the legacy API into a small, secure, testable modular application before adding the new cart/order domain.
 
+## Suggested branches
+
+- `refactor/api-structure` — 2.1 Simplify structure.
+- `refactor/auth-foundation` — 2.2 Configuration and authentication, including the legacy-data decision.
+- `feat/authorization` — 2.3 Authorization and its regression tests.
+- `refactor/api-conventions` — 2.4 HTTP/API conventions and OpenAPI direction.
+- `chore/postgres-foundation` — 2.5 provider switch, Compose, migrations, and demo-data baseline.
+- `test/api-foundation` — 2.5 integration-test infrastructure and initial API test CI.
+- `refactor/retire-legacy-flows` — 2.6 QR, Box Club, and rejected legacy behavior.
+
 ## Tasks
 
 ### 2.1 Simplify structure
@@ -294,7 +312,7 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - [ ] Establish clear development/test/production configuration boundaries.
 - [ ] Preserve and regression-test the Phase 1 configuration-containment guarantees while authentication is refactored.
 - [ ] Replace custom password cryptography with supported platform/library mechanisms.
-- [ ] Apply the Phase 0 user-data decision: create a clean reproducible demo baseline, or implement a staged credential migration with regression tests.
+- [ ] Decide and record whether any legacy SQL Server data must be preserved before replacing its provider; otherwise establish a clean reproducible demo baseline. Do not imply a data migration by default.
 - [ ] Keep issuer/audience/lifetime validation explicit.
 - [ ] Remove password-reset/SMTP behavior and its persistence/configuration because it is not accepted BOXD v1 scope.
 
@@ -304,7 +322,6 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - [ ] Enforce admin authorization server-side for catalogue and future order mutations.
 - [ ] Ensure customer-owned resources are authorized using authenticated identity, not client-supplied ownership.
 - [ ] Add authorization regression tests.
-- [ ] Require an explicit Administrator role/policy for all product/category mutations; `[Authorize]` alone is insufficient.
 
 ### 2.4 HTTP/API conventions
 
@@ -316,12 +333,18 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - [ ] Establish OpenAPI as the API contract source.
 - [ ] Choose one .NET 10 OpenAPI generation and exploration strategy; do not retain redundant generators or specifications.
 
-### 2.5 Persistence and test foundation
+### 2.5 PostgreSQL persistence and test foundation
 
-- [ ] Verify SQL Server remains appropriate for development/hosting; require an explicit decision before changing database technology.
-- [ ] Clean up EF Core configuration and migration ownership.
+**Planning decision:** PostgreSQL becomes the target relational provider. Docker Compose provides only the local PostgreSQL dependency. Production uses Neon for PostgreSQL; the ASP.NET Core API is containerized for Render and the Vite SPA is deployed to Vercel in Phase 9.
+
+- [ ] Complete the legacy-data decision from 2.2 before removing SQL Server migrations or databases.
+- [ ] Replace the SQL Server EF Core provider with the EF Core 10-compatible Npgsql provider and configure the API through `UseNpgsql`; do not retain dual providers or parallel migration sets.
+- [ ] Retire the SQL Server-specific migration snapshot/migrations and manual SQL seed scripts only after the data decision; create and inspect a clean PostgreSQL migration baseline from the accepted Phase 2 model.
+- [ ] Add a minimal local `compose.yaml` for a pinned supported PostgreSQL major version, named development volume, readiness health check, and non-tracked local environment configuration. Do not commit database passwords.
+- [ ] Verify a clean database can start through Compose and accept the generated PostgreSQL migrations; keep production migration application separate from API startup.
+- [ ] Establish separate secret names/workflows for direct Neon connections used by EF CLI migrations and runtime connections used by the API; do not run schema migrations through Neon’s pooled endpoint.
 - [ ] Replace manual seed notes with a reproducible demo-data strategy where practical.
-- [ ] Create API integration-test infrastructure using the real ASP.NET Core pipeline and relational persistence behavior.
+- [ ] Create API integration-test infrastructure using the real ASP.NET Core pipeline and PostgreSQL persistence behavior.
 - [ ] Add initial auth/authorization/smoke integration tests and CI execution.
 
 ### 2.6 Retire rejected legacy flows
@@ -339,6 +362,7 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - API structure is explainable without ceremonial layering.
 - Passwords, secrets, and authorization have safe foundations.
 - API errors/validation are consistent.
+- PostgreSQL migrations apply to a clean Compose database without SQL Server provider artifacts.
 - Integration tests exercise the real API/persistence path.
 - CI is green.
 
@@ -349,6 +373,12 @@ Turn the legacy API into a small, secure, testable modular application before ad
 ## Goal
 
 Define BOXD's interface system before feature implementation so the new frontend is cohesive rather than improvised screen by screen.
+
+## Suggested branches
+
+- `docs/ux-spec` — 3.1 Information architecture, 3.2 visual identity, and `WEB-DESIGN.md`.
+- `feat/ui-foundation` — 3.3 UI primitives, layouts, and route/feature boundaries.
+- `feat/api-client` — 3.3 typed OpenAPI client integration.
 
 ## Tasks
 
@@ -391,6 +421,13 @@ Define BOXD's interface system before feature implementation so the new frontend
 ## Goal
 
 Ship the first complete BOXD slice: visitors can discover and inspect the curated catalogue through the new API, database model, and interface.
+
+## Suggested branches
+
+- `feat/catalog-domain` — 4.1 model, sellable-state rules, migrations, and demo catalogue data.
+- `feat/catalog-api` — 4.2 public API and OpenAPI contract.
+- `feat/catalog-storefront` — 4.3 customer UI and responsive states.
+- `test/catalog` — 4.4 integration, migration, and seeded-data verification.
 
 ## Tasks
 
@@ -435,6 +472,12 @@ A visitor can go from storefront -> catalogue/category -> product detail using r
 
 Ship the customer/admin identity boundary required by commerce and administration.
 
+## Suggested branches
+
+- `feat/identity-api` — registration, login/session behavior, validation, and server identity boundaries.
+- `feat/identity-web` — account screens, navigation, and protected-route UX.
+- `test/identity` — authentication and Customer/Admin boundary coverage.
+
 ## Tasks
 
 - [ ] Finalize registration, login, logout/session behavior, and validation.
@@ -456,6 +499,13 @@ Customer and Administrator identities work through the new web/API path, with au
 ## Goal
 
 Complete the core commerce journey that turns BOXD from a catalogue into an actual e-commerce product.
+
+## Suggested branches
+
+- `feat/cart-domain` — 6.1 cart strategy and behavior plus 6.2 order model/migrations.
+- `feat/checkout-api` — 6.3 trusted checkout, stock, and order creation behavior.
+- `feat/checkout-web` — 6.4 cart, checkout, confirmation, and order-history UI.
+- `test/orders` — 6.5 high-risk commerce rules and critical browser flow.
 
 ## Tasks
 
@@ -521,6 +571,13 @@ A customer can complete BOXD's full purchase journey against persisted data, and
 
 Provide a credible operational surface without mixing administration into the customer storefront.
 
+## Suggested branches
+
+- `feat/admin-shell` — 7.1 layout, navigation, and authorization UX.
+- `feat/admin-catalogue` — 7.2 product, category, and stock operations.
+- `feat/admin-orders` — 7.3 order operations and 7.4 limited overview.
+- `test/admin` — 7.5 authorization, operation, and E2E evidence.
+
 ## Tasks
 
 ### 7.1 Admin shell and authorization
@@ -565,6 +622,13 @@ An administrator can operate catalogue and orders through a distinct, protected,
 ## Goal
 
 Stop adding scope and make the implemented product trustworthy, maintainable, responsive, and presentable.
+
+## Suggested branches
+
+- `test/hardening` — 8.1 risk-based test audit and missing evidence.
+- `fix/security-hardening` — 8.2 security and integrity findings.
+- `fix/frontend-quality` — 8.3 responsive, accessibility, and measured performance fixes.
+- `chore/cleanup-ci` — 8.4 cleanup, documentation verification, and CI finalization.
 
 ## Tasks
 
@@ -619,12 +683,28 @@ Stop adding scope and make the implemented product trustworthy, maintainable, re
 
 Produce a reproducible public BOXD deployment that can be shown without manual repair or explanation.
 
+## Suggested branches
+
+- `chore/neon-production` — Neon database, roles, migration workflow, and production configuration.
+- `chore/api-container-render` — API Dockerfile, Render service, healthcheck, proxy, and API secrets.
+- `chore/vercel-web` — Vercel project, public API URL, SPA rewrite, and CORS policy.
+- `test/deployment` — 9.3 hosted smoke tests and deployment verification.
+
 ## Tasks
 
-### 9.1 Hosting decision
+### 9.1 Selected hosting and deployment boundaries
 
-- [ ] Choose current hosting for web, API, and relational database based on cost, reliability, environment-secret support, deployment workflow, and SQL Server constraints.
-- [ ] If hosting constraints require changing database technology, make an explicit architecture decision before doing so.
+**Planning decision:** Neon hosts PostgreSQL, Render hosts the Dockerized ASP.NET Core API, and Vercel hosts the static Vite SPA. Reassess only if provider constraints make the plan infeasible; do not introduce an alternative database or a second API/web host by default.
+
+- [ ] Create a Neon production database and least-privilege application role. Keep direct, SSL-required Neon credentials for reviewed migration work separate from the API runtime credentials; never expose either to Vercel.
+- [ ] Add a production-ready multi-stage Dockerfile and `.dockerignore` for `apps/api/`, pinned to supported .NET 10 images and running as a non-root user where compatible.
+- [ ] Configure a Render Docker web service from the repository’s API Dockerfile. Bind the API to Render's `PORT` on `0.0.0.0`, configure a meaningful HTTP health endpoint, and verify forwarded-proxy/HTTPS behavior rather than disabling security middleware.
+- [ ] Configure Render environment secrets for the Neon connection, JWT, CORS, and any retained integration configuration; keep production migrations out of application startup and apply only reviewed EF-generated scripts through the direct Neon connection.
+- [ ] Do not declare or consume production secrets as Docker build arguments or image `ENV` layers, even when Render makes service environment values available at build time.
+- [ ] Configure a Vercel project with `apps/web` as its root, pnpm frozen install/build, and environment-specific `VITE_API_BASE_URL`. Treat this value as public and never place database/JWT/SMTP values in `VITE_*` variables.
+- [ ] Add Vercel SPA deep-link rewrites for React Router and verify direct navigation/refresh for storefront and future admin routes.
+- [ ] Configure API CORS for explicit Vercel production origin(s). Define a deliberate preview-deployment policy instead of broadly allowing `*.vercel.app`.
+- [ ] Do not change the selected relational provider again without an explicit architecture decision.
 
 ### 9.2 Production configuration
 
@@ -636,6 +716,7 @@ Produce a reproducible public BOXD deployment that can be shown without manual r
 ### 9.3 Deployment verification
 
 - [ ] Deploy database, API, and web.
+- [ ] Verify Render health checks, Neon connectivity/SSL, and Vercel deep-link rewrites before exposing the public URLs.
 - [ ] Smoke-test catalogue, customer purchase journey, and admin journey.
 - [ ] Verify deep-link refresh behavior and mobile layout on the hosted application.
 - [ ] Verify secrets/configuration are absent from client bundles and committed files.
@@ -649,6 +730,7 @@ Produce a reproducible public BOXD deployment that can be shown without manual r
 
 - BOXD has a stable public URL.
 - Deployment/migrations are reproducible.
+- API, database, and frontend secrets/configuration are isolated at their respective providers.
 - Demo data supports all portfolio flows/screenshots.
 - Public customer/admin smoke tests pass.
 
@@ -659,6 +741,12 @@ Produce a reproducible public BOXD deployment that can be shown without manual r
 ## Goal
 
 Turn the finished application and repository into a strong case study for recruiters and freelance clients without changing product scope.
+
+## Suggested branches
+
+- `docs/portfolio-readme` — 10.1 final README.
+- `docs/screenshots-metadata` — 10.2 screenshots, repository metadata, and social preview if justified.
+- `docs/case-study` — 10.3 interview/client explanation material.
 
 ## Tasks
 
@@ -720,6 +808,10 @@ Academic THE BOX
 
 Declare the agreed product complete and stop feature development.
 
+## Suggested branch
+
+- `chore/release-audit` — final audit, canonical-document verification, release tag, and removal of this temporary roadmap.
+
 ## Final audit
 
 ### Product
@@ -750,6 +842,7 @@ Declare the agreed product complete and stop feature development.
 - [ ] `README.md` reflects verified final evidence.
 - [ ] Optional docs exist only where justified.
 - [ ] Live links and screenshots are current.
+- [ ] Remove `docs/ROADMAP.md` after confirming its durable facts are represented in canonical documentation.
 
 ## Release
 
