@@ -239,13 +239,15 @@ Do not mechanically convert the legacy JSX UI.
 
 ### 1.5 Root CI
 
-- [ ] implement pnpm in the project.
+- [x] Standardize `apps/web` on pinned pnpm with a frozen lockfile.
 - [ ] Re-enable the manually disabled `.NET CI` workflow only after the root API and web gates below are implemented and passing.
 - [ ] Add API restore/build checks.
 - [ ] Add web clean install/lint/typecheck/build checks.
 - [ ] Ensure workflows run from repository root and real target paths.
 
 **Execution record — 2026-08-21:** Disabled the legacy `.NET CI` workflow manually on GitHub. It installed .NET 9 and ran `dotnet` from the repository root, where no solution/project exists, so every run failed before validating either application. Phase 1.5 must replace those commands with real API/web gates and re-enable the workflow only after they pass.
+
+**Execution record — 2026-08-21:** Standardized `apps/web` on pnpm 10.18.3 through the `packageManager` field and `pnpm-lock.yaml`. The npm lockfile was retired after a frozen pnpm install, typecheck, lint, and production build succeeded. Local documentation invokes pnpm through Corepack; CI adoption remains part of the pending root-workflow work.
 
 ## Documentation
 

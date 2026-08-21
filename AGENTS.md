@@ -66,10 +66,10 @@ If tests exist for the affected area, run them. Do not claim test coverage when 
 
 ```bash
 cd apps/web
-npm ci
-npm run typecheck
-npm run lint
-npm run build
+corepack pnpm install --frozen-lockfile
+corepack pnpm run typecheck
+corepack pnpm run lint
+corepack pnpm run build
 ```
 
 Do not treat a successful build as proof of runtime behavior when the change depends on API/database interaction.

@@ -121,10 +121,10 @@ The legacy API is configured to run locally on `http://localhost:5249` by the ex
 
 ```bash
 cd apps/web
-npm ci
-npm run typecheck
-npm run lint
-npm run dev
+corepack pnpm install --frozen-lockfile
+corepack pnpm run typecheck
+corepack pnpm run lint
+corepack pnpm run dev
 ```
 
 The Vite development server uses `http://localhost:5173` by default.
