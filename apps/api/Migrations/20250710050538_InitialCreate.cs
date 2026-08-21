@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace e_commerce_api.Migrations
+namespace Boxd.Api.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
