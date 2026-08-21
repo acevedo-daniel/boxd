@@ -192,7 +192,7 @@ Only transitions supported by the application should be exposed to administrator
 
 ## Current implementation baseline
 
-The repository currently contains the legacy academic implementation that BOXD will modernize. It already includes a product/category catalogue, user authentication and password reset, QR/Box Club functionality, and a React SPA.
+The API currently retains the legacy academic implementation, including product/category catalogue behavior, user authentication and password reset, and QR/Box Club functionality. The web application has been replaced with a React + TypeScript + Vite foundation; it intentionally contains only a minimal storefront shell until the later catalogue, identity, cart, and administration vertical slices are implemented.
 
 It does not yet implement the complete BOXD version 1 commerce flow defined above. In particular, the current domain does not contain the target cart and order model.
 

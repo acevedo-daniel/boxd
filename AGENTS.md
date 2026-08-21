@@ -40,7 +40,7 @@ Use `docs/ARCHITECTURE.md` as the source of truth for the distinction between **
 boxd/
 ├─ apps/
 │  ├─ api/              # legacy ASP.NET Core 10 API
-│  └─ web/              # legacy React/Vite JavaScript SPA
+│  └─ web/              # React/Vite TypeScript foundation
 ├─ docs/
 ├─ .github/
 ├─ README.md
@@ -67,6 +67,7 @@ If tests exist for the affected area, run them. Do not claim test coverage when 
 ```bash
 cd apps/web
 npm ci
+npm run typecheck
 npm run lint
 npm run build
 ```
