@@ -18,8 +18,10 @@ build/
 .env.production.local
 
 # IDE files
+.vs/
 .vscode/
 .idea/
+*.user
 *.swp
 *.swo
 
@@ -100,4 +102,10 @@ temp/
 
 # Configuration files with sensitive data (optional - uncomment if needed)
 # appsettings.Production.json
-# appsettings.Staging.json 
+# appsettings.Staging.json
+
+# Local application configuration
+appsettings.Local.json
+appsettings.local.json
+appsettings.*.Local.json
+appsettings.*.local.json

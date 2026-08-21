@@ -38,14 +38,15 @@ Use `docs/ARCHITECTURE.md` as the source of truth for the distinction between **
 
 ```text
 boxd/
-├─ e-commerce-api/      # legacy ASP.NET Core 9 API
-├─ e-commerce-spa/      # legacy React/Vite JavaScript SPA
+├─ apps/
+│  ├─ api/              # legacy ASP.NET Core 9 API
+│  └─ web/              # legacy React/Vite JavaScript SPA
 ├─ docs/
+├─ .github/
 ├─ README.md
+├─ ROADMAP.md
 └─ AGENTS.md
 ```
-
-Do not rename these directories to `apps/api` and `apps/web` until the active modernization task explicitly performs that migration.
 
 ## Current verification commands
 
@@ -54,7 +55,7 @@ Run the checks relevant to the files changed.
 ### API
 
 ```bash
-cd e-commerce-api
+cd apps/api
 dotnet restore
 dotnet build
 ```
@@ -64,7 +65,7 @@ If tests exist for the affected area, run them. Do not claim test coverage when 
 ### Web
 
 ```bash
-cd e-commerce-spa
+cd apps/web
 npm ci
 npm run lint
 npm run build
