@@ -15,13 +15,13 @@ Planned architecture must never be described as current architecture. As moderni
 
 ## Current baseline
 
-The repository contains two application directories:
+The repository contains two application directories under `apps/`:
 
 ```text
-e-commerce-spa
+apps/web
     -> HTTP/JSON
 
-e-commerce-api
+apps/api
     -> Entity Framework Core
 
 SQL Server
@@ -35,8 +35,8 @@ The web application is a React 19 SPA built with Vite 7 and JavaScript/JSX. It u
 
 | Component / area | Owns | Boundary |
 | --- | --- | --- |
-| `e-commerce-spa/` | Browser UI, routing, local authentication state, customer/admin pages, API calls | Must not access SQL Server directly or enforce trusted authorization rules. |
-| `e-commerce-api/` | HTTP API, authentication, product/category behavior, persistence coordination, email/QR behavior | Owns server-side authorization and persistent business state. |
+| `apps/web/` | Browser UI, routing, local authentication state, customer/admin pages, API calls | Must not access SQL Server directly or enforce trusted authorization rules. |
+| `apps/api/` | HTTP API, authentication, product/category behavior, persistence coordination, email/QR behavior | Owns server-side authorization and persistent business state. |
 | SQL Server | Relational persistent data managed through EF Core migrations | Must be accessed through the API application, not from the browser. |
 | SMTP integration | Password-recovery email delivery in the legacy implementation | External delivery failure must not expose credentials or internal configuration. |
 
@@ -101,7 +101,6 @@ The modernization roadmap must address verified issues rather than preserve them
 
 - the API still targets .NET 9;
 - the client is JavaScript rather than TypeScript;
-- API and web live under legacy directory names;
 - the API uses a controller/service/repository chain that may contain redundant abstractions;
 - current authentication configuration includes development-oriented defaults that are not acceptable as final security configuration;
 - authorization boundaries need to be enforced explicitly for administrator operations;
@@ -111,7 +110,7 @@ The modernization roadmap must address verified issues rather than preserve them
 - request DTOs and product/category business inputs lack consistent server-side validation, and some controllers return raw exception messages;
 - the API has no application test project or central production exception/problem-details policy;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
-- the existing GitHub Actions directory is nested under the API rather than at repository root;
+- the GitHub Actions workflow is now at repository root but still needs valid target-path quality gates in Phase 1.5;
 - the frontend contains hard-coded local API assumptions that must become environment-aware configuration.
 - legacy SPA catalogue routes are protected by a local-storage route guard even though BOXD requires visitor browsing.
 
@@ -135,6 +134,7 @@ boxd/
 ├─ .github/
 │  └─ workflows/
 ├─ README.md
+├─ ROADMAP.md
 └─ AGENTS.md
 ```
 

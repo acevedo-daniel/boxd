@@ -53,11 +53,11 @@ The current domain does **not** yet contain the complete BOXD cart/order workflo
 Current repository topology:
 
 ```text
-e-commerce-spa/      React SPA
+apps/web/            Legacy React SPA
        |
        | HTTP / JSON
        v
-e-commerce-api/      ASP.NET Core API
+apps/api/            Legacy ASP.NET Core API
        |
        | EF Core
        v
@@ -80,20 +80,22 @@ These are the technologies verified in the repository today. Modernized target v
 
 | Path                   | Responsibility                                                      |
 | ---------------------- | ------------------------------------------------------------------- |
-| `e-commerce-api/`      | Legacy ASP.NET Core API and persistence layer.                      |
-| `e-commerce-spa/`      | Legacy React/Vite SPA.                                              |
+| `apps/api/`            | Legacy ASP.NET Core API and persistence layer.                      |
+| `apps/web/`            | Legacy React/Vite SPA.                                              |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
+| `.github/workflows/`   | Repository-level CI workflows; quality gates are refined in Phase 1.5. |
+| `ROADMAP.md`           | Execution order, audit findings, and completion state.              |
 | `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 
-The legacy directory names are temporary and will change only when the modernization roadmap reaches repository restructuring.
+The applications now occupy their target monorepo paths. Their contents remain legacy until the later API and web modernization tasks replace them intentionally.
 
 ## Local development
 
 ### API
 
 ```bash
-cd e-commerce-api
+cd apps/api
 dotnet restore
 dotnet ef database update --project e-commerce-api.csproj
 dotnet run --project e-commerce-api.csproj
@@ -101,7 +103,7 @@ dotnet run --project e-commerce-api.csproj
 
 Before applying migrations or running the API, provide `ConnectionStrings:DefaultConnection` and `JwtSettings:SecretKey` through .NET User Secrets (development) or environment/secret configuration (deployment). Tracked `appsettings*.json` files are safe templates and intentionally do not contain credentials.
 
-For local development, run from `e-commerce-api/`:
+For local development, run from `apps/api/`:
 
 ```powershell
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<local SQL Server connection string>"
@@ -115,7 +117,7 @@ The legacy API is configured to run locally on `http://localhost:5249` by the ex
 ### Web
 
 ```bash
-cd e-commerce-spa
+cd apps/web
 npm ci
 npm run dev
 ```
@@ -134,4 +136,4 @@ It is now being rebuilt and maintained by Daniel Acevedo as a personal portfolio
 
 - [Project](docs/PROJECT.md) — product purpose, scope, actors, workflows, domain concepts, and durable business rules.
 - [Architecture](docs/ARCHITECTURE.md) — current system boundaries, known baseline concerns, modernization constraints, invariants, and trade-offs.
-- [Roadmap](docs/ROADMAP.md) — execution order, audit findings, and completion state.
+- [Roadmap](ROADMAP.md) — execution order, audit findings, and completion state.

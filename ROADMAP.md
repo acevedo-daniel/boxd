@@ -136,7 +136,7 @@ Classify meaningful legacy pieces as `KEEP`, `REFACTOR`, `REPLACE`, or `REMOVE`,
 - The sole API project targets .NET 9 and restores/builds successfully with zero warnings or errors. `dotnet test` completes without executing tests because the repository has no test project.
 - The legacy SPA installs and builds successfully. `npm run lint` fails with 10 existing unused-variable errors. `npm ci` reports 14 dependency vulnerabilities (2 low, 1 moderate, 11 high); this is an audit signal, not authorization for an unreviewed package upgrade.
 - API and SPA development servers start, and Swagger/SPA root return HTTP 200. Catalogue requests cannot be smoke-tested against persistence in this environment: `GET /api/products` times out and `GET /api/categories` returns HTTP 500 because the required local SQL Server/database is unavailable or unhealthy. Preserve this as an environment prerequisite and establish a reproducible database path before treating it as an application regression.
-- The only tracked CI workflow is nested at `e-commerce-api/.github/workflows/ci.yml`; its `dotnet` commands run from the repository root, where there is no solution/project, so it cannot validate the current checkout as written.
+- At the Phase 0 audit, the only tracked CI workflow was nested under the API and its root-level `dotnet` commands could not validate the checkout. It was moved to `.github/workflows/` in Phase 1.2; valid target-path quality gates remain Phase 1.5 work.
 
 ### Disposition and migration map
 
@@ -208,10 +208,12 @@ boxd/
 └─ AGENTS.md
 ```
 
-- [ ] Move the API to `apps/api/` while preserving history where practical.
-- [ ] Establish `apps/web/` as the target frontend location.
-- [ ] Move useful workflows to root `.github/workflows/`.
-- [ ] Remove ambiguous legacy application directories after intentional migration.
+- [x] Move the API to `apps/api/` while preserving history where practical.
+- [x] Establish `apps/web/` as the target frontend location.
+- [x] Move useful workflows to root `.github/workflows/`.
+- [x] Remove ambiguous legacy application directories after intentional migration.
+
+**Execution record — 2026-08-20:** Moved the legacy API and SPA source to `apps/api/` and `apps/web/`, moved the workflow to `.github/workflows/ci.yml`, and moved this roadmap to the repository root. The workflow's commands were deliberately not redesigned here; Phase 1.5 owns CI quality gates.
 
 ### 1.3 API upgrade
 
