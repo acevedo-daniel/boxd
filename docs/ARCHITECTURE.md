@@ -4,7 +4,7 @@
 
 ## Status
 
-Phases 0 (audit and baseline), 1 (repository/toolchain foundation), and 2.1 (API structure simplification) are complete. The repository still contains legacy product behavior; Phase 2.2 is the next modernization task.
+Phases 0 (audit and baseline), 1 (repository/toolchain foundation), 2.1 (API structure simplification), and 2.2 (configuration and authentication) are complete. The repository still contains legacy product behavior; Phase 2.3 is the next modernization task.
 
 This document deliberately distinguishes between:
 
@@ -27,7 +27,7 @@ apps/api
 SQL Server
 ```
 
-The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, explicit feature-local DTO mapping, SMTP email support, and QR generation.
+The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, explicit feature-local DTO mapping, supported Identity password hashing, and QR generation.
 
 The web application is a React 19 + TypeScript SPA built with Vite 7. It uses React Router, a storefront layout boundary, and a centralized environment-aware HTTP client foundation. Its current routes intentionally contain only the BOXD home and not-found states; catalogue, identity, cart, and administration remain later vertical slices.
 
@@ -36,9 +36,8 @@ The web application is a React 19 + TypeScript SPA built with Vite 7. It uses Re
 | Component / area | Owns | Boundary |
 | --- | --- | --- |
 | `apps/web/` | Browser UI, routing, storefront layout, and centralized API configuration/client code | Must not access SQL Server directly or enforce trusted authorization rules. |
-| `apps/api/` | HTTP API, authentication, product/category behavior, persistence coordination, email/QR behavior | Owns server-side authorization and persistent business state. |
+| `apps/api/` | HTTP API, authentication, product/category behavior, persistence coordination, and QR behavior | Owns server-side authorization and persistent business state. |
 | SQL Server | Relational persistent data managed through EF Core migrations | Must be accessed through the API application, not from the browser. |
-| SMTP integration | Password-recovery email delivery in the legacy implementation | External delivery failure must not expose credentials or internal configuration. |
 
 ### Current API structure
 
@@ -46,18 +45,18 @@ The API is incrementally organized by feature. Each active feature keeps its con
 
 ```text
 Features/
-  Auth/        controller, service, contracts, User, PasswordResetToken
+  Auth/        controller, service, contracts, User
   Categories/  controller, service, contracts, Category
   Products/    controller, service, contracts, Product
   Qr/          controller, service, QrToken
 Infrastructure/
-  Email/       SMTP adapter behind IEmailService
+  Configuration/ validated runtime configuration
 Data/
   ApplicationDbContext
 Migrations/
 ```
 
-`GenericRepository<T>`, category/product repository interfaces, and one-to-one feature-service interfaces were removed because they only re-expressed EF Core or direct in-process calls. Product and category services retain useful feature behavior: queries, category existence checks, persistence coordination, and explicit request/response mapping. AutoMapper was removed because the application had only two small, flat maps and AutoMapper's current licensing/configuration requirement added deployment configuration without a proportional benefit. `IEmailService` remains because SMTP is an external integration boundary.
+`GenericRepository<T>`, category/product repository interfaces, and one-to-one feature-service interfaces were removed because they only re-expressed EF Core or direct in-process calls. Product and category services retain useful feature behavior: queries, category existence checks, persistence coordination, and explicit request/response mapping. AutoMapper was removed because the application had only two small, flat maps and AutoMapper's current licensing/configuration requirement added deployment configuration without a proportional benefit.
 
 ### Current persistent model
 
@@ -68,10 +67,11 @@ User
 Product
 Category
 QrToken
-PasswordResetToken
 ```
 
 The current model does not yet contain the target BOXD cart/order domain required by `docs/PROJECT.md`.
+
+**Legacy-data decision:** no legacy SQL Server data will be preserved. There is no verified production data set or migration requirement, and legacy password hashes are intentionally incompatible with the supported hasher. While SQL Server remains current, migration `RemovePasswordResetAndLegacySalt` removes the rejected password-recovery table and legacy salt column. Phase 2.5 will replace the provider and legacy migration chain with a clean, reproducible PostgreSQL BOXD demo baseline rather than a data migration.
 
 ### Current integration flow
 
@@ -84,7 +84,7 @@ ASP.NET Core controllers
    -> SQL Server
 ```
 
-Additional legacy flows include SMTP-based password recovery and QR token generation/validation.
+The remaining legacy flow is QR token generation/validation, scheduled for removal in Phase 2.6.
 
 ### Current client architecture
 
@@ -101,15 +101,13 @@ The web foundation has a storefront layout boundary. An administration layout wi
 
 The modernization roadmap must address verified issues rather than preserve them by default. Important baseline concerns include:
 
-- current authentication configuration includes development-oriented defaults that are not acceptable as final security configuration;
 - authorization boundaries need to be enforced explicitly for administrator operations;
 - product/category mutations currently require only an authenticated user, not an Administrator role;
-- custom HMAC-SHA512 password hashing remains legacy behavior that must be replaced in Phase 2;
-- JWT signing keys, local database configuration, and legacy SMTP credentials are supplied through User Secrets or environment/secret configuration; startup rejects missing JWT/database configuration rather than using fallbacks;
+- JWT signing keys and local database configuration are supplied through User Secrets or environment/secret configuration; startup rejects missing/invalid connection, signing-key, issuer, audience, lifetime, and CORS configuration rather than using fallbacks;
 - request DTOs and product/category business inputs lack consistent server-side validation, and some controllers return raw exception messages;
-- the API has no application test project or central production exception/problem-details policy;
+- focused unit tests cover configuration containment/validation and supported password hashing; API integration-test infrastructure and central production exception/problem-details policy remain pending;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
-- CI runs repository-root API and web jobs against their explicit target paths; it currently covers API restore/Release build and web frozen install/typecheck/lint/build, while application tests will be added with their supporting test projects;
+- CI runs repository-root API and web jobs against their explicit target paths; it currently covers API restore/Release build and web frozen install/typecheck/lint/build. The new unit tests run locally; adding test execution to CI remains part of the Phase 2.5 test-foundation task;
 
 This list is intentionally architectural rather than a complete audit. The roadmap/audit phase may discover additional implementation defects.
 
@@ -160,6 +158,7 @@ This is an organizational constraint, not permission to introduce DDD, CQRS, Med
 
 - Entity Framework Core remains the primary data-access technology.
 - PostgreSQL is the selected relational database for the modernization. The legacy SQL Server schema remains current only until the planned Phase 2 provider migration; a minimal Docker Compose service will make PostgreSQL reproducible for local development.
+- No legacy SQL Server data will be migrated. PostgreSQL starts from a clean, reproducible BOXD demo-data baseline after the provider transition.
 - EF Core migrations own schema evolution.
 - Persistence abstractions should exist only where they add a real boundary or reusable domain-specific query behavior.
 - Generic repository wrappers around `DbContext`/`DbSet` operations are not a target requirement.

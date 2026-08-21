@@ -18,7 +18,6 @@ namespace Boxd.Api.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<QrToken> QrTokens { get; set; }
-        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,7 +49,6 @@ namespace Boxd.Api.Data
                 entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
                 entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
                 entity.Property(u => u.PasswordHash).IsRequired();
-                entity.Property(u => u.PasswordSalt).IsRequired();
                 entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
             });
 
@@ -62,17 +60,6 @@ namespace Boxd.Api.Data
                 entity.Property(qt => qt.IsUsed).IsRequired();
             });
 
-            modelBuilder.Entity<PasswordResetToken>(entity =>
-            {
-                entity.HasIndex(t => t.Token).IsUnique();
-                entity.Property(t => t.Token).IsRequired().HasMaxLength(255);
-                entity.Property(t => t.ExpiresAt).IsRequired();
-                entity.Property(t => t.IsUsed).IsRequired();
-                entity.HasOne(t => t.User)
-                    .WithMany()
-                    .HasForeignKey(t => t.UserId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
         }
     }
 }
