@@ -239,6 +239,7 @@ Do not mechanically convert the legacy JSX UI.
 
 ### 1.5 Root CI
 
+- [ ] implement pnpm in the project.
 - [ ] Re-enable the manually disabled `.NET CI` workflow only after the root API and web gates below are implemented and passing.
 - [ ] Add API restore/build checks.
 - [ ] Add web clean install/lint/typecheck/build checks.
