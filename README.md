@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 1 is in progress: configuration containment, repository hygiene/layout, API .NET 10 upgrade, and the TypeScript web foundation are complete.**
+**Phase 1 is complete: configuration containment, repository hygiene/layout, API .NET 10 upgrade, TypeScript web foundation, and root CI gates are verified.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 

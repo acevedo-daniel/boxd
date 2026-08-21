@@ -63,7 +63,7 @@ Do not implement future phases early. Do not add real payments, reviews, wishlis
 | Phase | Outcome                                          | Status |
 | ----- | ------------------------------------------------ | ------ |
 | 0     | Verified legacy baseline and migration map       | [x]    |
-| 1     | Clean repository and modern toolchain foundation | [~]    |
+| 1     | Clean repository and modern toolchain foundation | [x]    |
 | 2     | Secure, simplified API foundation                | [ ]    |
 | 3     | Defined product UX and frontend foundation       | [ ]    |
 | 4     | Complete public catalogue slice                  | [ ]    |
@@ -267,6 +267,8 @@ Do not mechanically convert the legacy JSX UI.
 - New React + TypeScript frontend builds.
 - Root CI checks both applications.
 - No legacy parallel application remains ambiguous.
+
+**Phase completion audit — 2026-08-21:** All Phase 1 tasks are complete. The repository has the accepted `apps/api` and `apps/web` monorepo shape with no parallel legacy application directories; the API restores and Release-builds on .NET 10; the React + TypeScript web application completes a frozen pnpm install, typecheck, lint, and production build; and GitHub Actions run 32446541238 passed both `API` and `Web` jobs on the Phase 1 pull request. Documentation and agent instructions now reflect this completed foundation. Phase 2 remains unstarted.
 
 ---
 

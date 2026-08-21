@@ -4,7 +4,7 @@
 
 ## Status
 
-Phase 0 (audit and baseline) is complete. The repository still contains the legacy application; Phase 1 is in progress.
+Phases 0 (audit and baseline) and 1 (repository/toolchain foundation) are complete. The repository still contains the legacy application; Phase 2 is the next modernization phase.
 
 This document deliberately distinguishes between:
 
