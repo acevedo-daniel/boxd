@@ -63,7 +63,7 @@ Do not implement future phases early. Do not add real payments, reviews, wishlis
 | Phase | Outcome                                          | Status |
 | ----- | ------------------------------------------------ | ------ |
 | 0     | Verified legacy baseline and migration map       | [x]    |
-| 1     | Clean repository and modern toolchain foundation | [~]    |
+| 1     | Clean repository and modern toolchain foundation | [x]    |
 | 2     | Secure, simplified API foundation                | [ ]    |
 | 3     | Defined product UX and frontend foundation       | [ ]    |
 | 4     | Complete public catalogue slice                  | [ ]    |
@@ -239,13 +239,19 @@ Do not mechanically convert the legacy JSX UI.
 
 ### 1.5 Root CI
 
-- [ ] implement pnpm in the project.
-- [ ] Re-enable the manually disabled `.NET CI` workflow only after the root API and web gates below are implemented and passing.
-- [ ] Add API restore/build checks.
-- [ ] Add web clean install/lint/typecheck/build checks.
-- [ ] Ensure workflows run from repository root and real target paths.
+- [x] Standardize `apps/web` on pinned pnpm with a frozen lockfile.
+- [x] Re-enable the manually disabled CI workflow after the root API and web gates below are implemented and passing.
+- [x] Add API restore/build checks.
+- [x] Add web clean install/lint/typecheck/build checks.
+- [x] Ensure workflows run from repository root and real target paths.
 
 **Execution record — 2026-08-21:** Disabled the legacy `.NET CI` workflow manually on GitHub. It installed .NET 9 and ran `dotnet` from the repository root, where no solution/project exists, so every run failed before validating either application. Phase 1.5 must replace those commands with real API/web gates and re-enable the workflow only after they pass.
+
+**Execution record — 2026-08-21:** Standardized `apps/web` on pnpm 10.18.3 through the `packageManager` field and `pnpm-lock.yaml`. The npm lockfile was retired after a frozen pnpm install, typecheck, lint, and production build succeeded. Local documentation invokes pnpm through Corepack; CI adoption remains part of the pending root-workflow work.
+
+**Execution record — 2026-08-21:** Replaced the disabled, root-level .NET 9 workflow with independent repository-root jobs that run from `apps/api` and `apps/web`. The API job uses .NET 10 to restore and Release-build `e-commerce-api.sln`; the web job uses Node 24, Corepack, pinned pnpm, a frozen install, typecheck, lint, and production build. No test gate was added because the repository has no test project yet; Phase 2 owns the first API integration tests.
+
+**Execution record — 2026-08-21:** After the local gates passed, re-enabled the GitHub Actions workflow. No commit or push was made, so GitHub will evaluate the new workflow definition on the next published change rather than running the disabled legacy definition.
 
 ## Documentation
 
@@ -261,6 +267,8 @@ Do not mechanically convert the legacy JSX UI.
 - New React + TypeScript frontend builds.
 - Root CI checks both applications.
 - No legacy parallel application remains ambiguous.
+
+**Phase completion audit — 2026-08-21:** All Phase 1 tasks are complete. The repository has the accepted `apps/api` and `apps/web` monorepo shape with no parallel legacy application directories; the API restores and Release-builds on .NET 10; the React + TypeScript web application completes a frozen pnpm install, typecheck, lint, and production build; and GitHub Actions run 32446541238 passed both `API` and `Web` jobs on the Phase 1 pull request. Documentation and agent instructions now reflect this completed foundation. Phase 2 remains unstarted.
 
 ---
 

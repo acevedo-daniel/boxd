@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 1 is in progress: configuration containment, repository hygiene/layout, API .NET 10 upgrade, and the TypeScript web foundation are complete.**
+**Phase 1 is complete: configuration containment, repository hygiene/layout, API .NET 10 upgrade, TypeScript web foundation, and root CI gates are verified.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 
@@ -84,7 +84,7 @@ These are the technologies verified in the repository today. The API requires a 
 | `apps/web/`            | React/TypeScript/Vite web foundation and future storefront/admin UI. |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
-| `.github/workflows/`   | Repository-level CI workflows; quality gates are refined in Phase 1.5. |
+| `.github/workflows/`   | Repository-level CI: API restore/Release build and web frozen install/typecheck/lint/build gates. |
 | `ROADMAP.md`           | Execution order, audit findings, and completion state.              |
 | `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 
@@ -121,10 +121,10 @@ The legacy API is configured to run locally on `http://localhost:5249` by the ex
 
 ```bash
 cd apps/web
-npm ci
-npm run typecheck
-npm run lint
-npm run dev
+corepack pnpm install --frozen-lockfile
+corepack pnpm run typecheck
+corepack pnpm run lint
+corepack pnpm run dev
 ```
 
 The Vite development server uses `http://localhost:5173` by default.

@@ -6,7 +6,7 @@
 
 Use this file to execute changes safely and consistently. It is not a product specification and must not duplicate durable product or architecture documentation.
 
-BOXD is in **Phase 1 of modernization**. The repository still contains the legacy academic implementation. Do not perform broad modernization, restructuring, dependency upgrades, feature work, or cleanup unless the active task explicitly asks for it.
+Phase 1 of modernization is complete. The repository still contains the legacy academic implementation; do not begin Phase 2 or perform broad modernization, restructuring, dependency upgrades, feature work, or cleanup unless the active task explicitly asks for it.
 
 ## Read before changing code
 
@@ -66,10 +66,10 @@ If tests exist for the affected area, run them. Do not claim test coverage when 
 
 ```bash
 cd apps/web
-npm ci
-npm run typecheck
-npm run lint
-npm run build
+corepack pnpm install --frozen-lockfile
+corepack pnpm run typecheck
+corepack pnpm run lint
+corepack pnpm run build
 ```
 
 Do not treat a successful build as proof of runtime behavior when the change depends on API/database interaction.
