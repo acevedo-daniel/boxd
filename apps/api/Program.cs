@@ -2,10 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using e_commerce_api.Data;
-using e_commerce_api.Repositories;
-using e_commerce_api.Interfaces;
-using e_commerce_api.Services;
+using Boxd.Api.Data;
+using Boxd.Api.Features.Auth;
+using Boxd.Api.Features.Categories;
+using Boxd.Api.Features.Products;
+using Boxd.Api.Features.Qr;
+using Boxd.Api.Infrastructure.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,21 +72,14 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register repositories
-builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
-// Register services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IQrService, QrService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<QrService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();

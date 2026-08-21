@@ -4,7 +4,7 @@
 
 ## Status
 
-Phases 0 (audit and baseline) and 1 (repository/toolchain foundation) are complete. The repository still contains the legacy application; Phase 2 is the next modernization phase.
+Phases 0 (audit and baseline), 1 (repository/toolchain foundation), and 2.1 (API structure simplification) are complete. The repository still contains legacy product behavior; Phase 2.2 is the next modernization task.
 
 This document deliberately distinguishes between:
 
@@ -27,7 +27,7 @@ apps/api
 SQL Server
 ```
 
-The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, AutoMapper, repository/service abstractions, SMTP email support, and QR generation.
+The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, explicit feature-local DTO mapping, SMTP email support, and QR generation.
 
 The web application is a React 19 + TypeScript SPA built with Vite 7. It uses React Router, a storefront layout boundary, and a centralized environment-aware HTTP client foundation. Its current routes intentionally contain only the BOXD home and not-found states; catalogue, identity, cart, and administration remain later vertical slices.
 
@@ -42,19 +42,22 @@ The web application is a React 19 + TypeScript SPA built with Vite 7. It uses Re
 
 ### Current API structure
 
-The legacy API is organized primarily by technical layer:
+The API is incrementally organized by feature. Each active feature keeps its controller, service, contracts, and entities together; `ApplicationDbContext` remains the direct EF Core persistence boundary.
 
 ```text
-Controllers
-  -> Services / interfaces
-      -> Repositories / interfaces
-          -> ApplicationDbContext
-              -> SQL Server
+Features/
+  Auth/        controller, service, contracts, User, PasswordResetToken
+  Categories/  controller, service, contracts, Category
+  Products/    controller, service, contracts, Product
+  Qr/          controller, service, QrToken
+Infrastructure/
+  Email/       SMTP adapter behind IEmailService
+Data/
+  ApplicationDbContext
+Migrations/
 ```
 
-Supporting areas include DTOs, AutoMapper profiles, entity models, migrations, and infrastructure-oriented services such as email and QR generation.
-
-The current structure is a migration baseline, not a pattern that BOXD is required to preserve. Existing abstractions must be retained only when they protect a meaningful boundary or contain useful behavior.
+`GenericRepository<T>`, category/product repository interfaces, and one-to-one feature-service interfaces were removed because they only re-expressed EF Core or direct in-process calls. Product and category services retain useful feature behavior: queries, category existence checks, persistence coordination, and explicit request/response mapping. AutoMapper was removed because the application had only two small, flat maps and AutoMapper's current licensing/configuration requirement added deployment configuration without a proportional benefit. `IEmailService` remains because SMTP is an external integration boundary.
 
 ### Current persistent model
 
@@ -76,8 +79,7 @@ The current model does not yet contain the target BOXD cart/order domain require
 React TypeScript SPA
    -> REST/JSON
 ASP.NET Core controllers
-   -> services
-   -> repositories
+   -> feature services
    -> EF Core DbContext
    -> SQL Server
 ```
@@ -99,7 +101,6 @@ The web foundation has a storefront layout boundary. An administration layout wi
 
 The modernization roadmap must address verified issues rather than preserve them by default. Important baseline concerns include:
 
-- the API uses a controller/service/repository chain that may contain redundant abstractions;
 - current authentication configuration includes development-oriented defaults that are not acceptable as final security configuration;
 - authorization boundaries need to be enforced explicitly for administrator operations;
 - product/category mutations currently require only an authenticated user, not an Administrator role;

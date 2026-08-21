@@ -1,8 +1,11 @@
-﻿
-using e_commerce_api.Models;
+
+using Boxd.Api.Features.Auth;
+using Boxd.Api.Features.Categories;
+using Boxd.Api.Features.Products;
+using Boxd.Api.Features.Qr;
 using Microsoft.EntityFrameworkCore;
 
-namespace e_commerce_api.Data
+namespace Boxd.Api.Data
 {
     public class ApplicationDbContext : DbContext
     {

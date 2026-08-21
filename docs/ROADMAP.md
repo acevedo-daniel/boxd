@@ -231,7 +231,7 @@ boxd/
 - [x] Establish reproducible EF Core CLI tooling: register a compatible local `dotnet-ef` tool and remove `Microsoft.EntityFrameworkCore.Tools`; Package Manager Console support is not retained.
 - [x] Resolve meaningful compiler/analyzer issues without suppressing them blindly.
 
-**Execution record — 2026-08-21:** Upgraded `apps/api/e-commerce-api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Registered `dotnet-ef` 10.0.11 in the root tool manifest and removed `Microsoft.EntityFrameworkCore.Tools`, because the documented workflow uses the cross-platform EF CLI rather than Visual Studio Package Manager Console. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
+**Execution record — 2026-08-21:** Upgraded `apps/api/Boxd.Api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Registered `dotnet-ef` 10.0.11 in the root tool manifest and removed `Microsoft.EntityFrameworkCore.Tools`, because the documented workflow uses the cross-platform EF CLI rather than Visual Studio Package Manager Console. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
 
 ### 1.4 New web foundation
 
@@ -257,7 +257,7 @@ Do not mechanically convert the legacy JSX UI.
 
 **Execution record — 2026-08-21:** Standardized `apps/web` on pnpm 10.18.3 through the `packageManager` field and `pnpm-lock.yaml`. The npm lockfile was retired after a frozen pnpm install, typecheck, lint, and production build succeeded. Local documentation invokes pnpm through Corepack; CI adoption remains part of the pending root-workflow work.
 
-**Execution record — 2026-08-21:** Replaced the disabled, root-level .NET 9 workflow with independent repository-root jobs that run from `apps/api` and `apps/web`. The API job uses .NET 10 to restore and Release-build `e-commerce-api.sln`; the web job uses Node 24, Corepack, pinned pnpm, a frozen install, typecheck, lint, and production build. No test gate was added because the repository has no test project yet; Phase 2 owns the first API integration tests.
+**Execution record — 2026-08-21:** Replaced the disabled, root-level .NET 9 workflow with independent repository-root jobs that run from `apps/api` and `apps/web`. The API job uses .NET 10 to restore and Release-build `Boxd.Api.sln`; the web job uses Node 24, Corepack, pinned pnpm, a frozen install, typecheck, lint, and production build. No test gate was added because the repository has no test project yet; Phase 2 owns the first API integration tests.
 
 **Execution record — 2026-08-21:** After the local gates passed, re-enabled the GitHub Actions workflow. No commit or push was made, so GitHub will evaluate the new workflow definition on the next published change rather than running the disabled legacy definition.
 
@@ -300,12 +300,14 @@ Turn the legacy API into a small, secure, testable modular application before ad
 
 ### 2.1 Simplify structure
 
-- [ ] Move toward feature-oriented organization incrementally.
-- [ ] Remove `GenericRepository<T>` if it only re-wraps EF Core primitives.
-- [ ] Remove service/repository interfaces that do not protect a real boundary.
-- [ ] Keep domain-specific queries/services only where they add useful behavior.
-- [ ] Decide whether to retain AutoMapper: evaluate the simplicity of current mappings, its licensing/deployment configuration, and migrate to explicit mapping if it adds no clear value.
-- [ ] Normalize namespaces/naming around BOXD.
+- [x] Move toward feature-oriented organization incrementally.
+- [x] Remove `GenericRepository<T>` if it only re-wraps EF Core primitives.
+- [x] Remove service/repository interfaces that do not protect a real boundary.
+- [x] Keep domain-specific queries/services only where they add useful behavior.
+- [x] Decide whether to retain AutoMapper: evaluate the simplicity of current mappings, its licensing/deployment configuration, and migrate to explicit mapping if it adds no clear value.
+- [x] Normalize namespaces/naming around BOXD.
+
+**Execution record — 2026-08-21:** Moved the active legacy API into feature-local `Auth`, `Categories`, `Products`, and `Qr` areas, with contracts and entities co-located with the owning feature. `ApplicationDbContext` remains the direct EF Core boundary. Removed `GenericRepository<T>`, product/category repositories, and one-to-one service interfaces because they only re-wrapped EF Core or an in-process concrete service. Product and category services retain feature-specific queries, category checks, persistence coordination, and explicit mapping. Kept `IEmailService` because SMTP is an external integration boundary. Removed AutoMapper 16.2.0 and its profiles: the application used only small, flat maps, while current AutoMapper versions require license configuration or emit licensing diagnostics; explicit mapping is simpler and has no deployment configuration. Renamed the project and solution to `Boxd.Api`, normalized source namespaces to `Boxd.Api`, updated the API CI target and documented commands, and removed the obsolete WeatherForecast HTTP request. The API restores and Release-builds with zero warnings or errors. This task deliberately does not change authentication/configuration, authorization, API conventions, SQL Server/PostgreSQL work, tests, or QR/SMTP retirement, which remain in their scheduled Phase 2 tasks.
 
 ### 2.2 Configuration and authentication
 

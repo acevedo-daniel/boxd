@@ -100,8 +100,8 @@ Install a .NET 10 SDK that satisfies the version selection in [`global.json`](gl
 dotnet tool restore
 cd apps/api
 dotnet restore
-dotnet ef database update --project e-commerce-api.csproj
-dotnet run --project e-commerce-api.csproj
+dotnet ef database update --project Boxd.Api.csproj
+dotnet run --project Boxd.Api.csproj
 ```
 
 Before applying migrations or running the API, provide `ConnectionStrings:DefaultConnection` and `JwtSettings:SecretKey` through .NET User Secrets (development) or environment/secret configuration (deployment). Tracked `appsettings*.json` files are safe templates and intentionally do not contain credentials.

@@ -110,3 +110,7 @@ appsettings.Local.json
 appsettings.local.json
 appsettings.*.Local.json
 appsettings.*.local.json
+
+# Local planning and agent instructions
+/docs/ROADMAP.md
+/AGENTS.md
