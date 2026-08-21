@@ -1,4 +1,5 @@
 using Boxd.Api.Features.Categories.Contracts;
+using Boxd.Api.Features.Auth.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ public sealed class CategoriesController(CategoryService categoryService) : Cont
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<ActionResult<CategoryResponseDto>> PostCategory([FromBody] CreateCategoryDto createCategoryDto)
     {
         try
@@ -38,7 +39,7 @@ public sealed class CategoriesController(CategoryService categoryService) : Cont
     }
 
     [HttpPut("{id}")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<IActionResult> PutCategory(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
     {
         if (id != updateCategoryDto.Id)
@@ -62,7 +63,7 @@ public sealed class CategoriesController(CategoryService categoryService) : Cont
     }
 
     [HttpDelete("{id}")]
-    [Authorize]
+    [Authorize(Policy = AuthorizationPolicies.AdministratorOnly)]
     public async Task<IActionResult> DeleteCategory(int id)
     {
         try

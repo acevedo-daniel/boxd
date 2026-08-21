@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Boxd.Api.Data;
 using Boxd.Api.Features.Auth;
+using Boxd.Api.Features.Auth.Authorization;
 using Boxd.Api.Features.Categories;
 using Boxd.Api.Features.Products;
 using Boxd.Api.Features.Qr;
@@ -42,6 +43,8 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 });
+
+builder.Services.AddAuthorization(AuthorizationPolicies.Configure);
 
 var allowedOrigins = ApiConfiguration.GetAllowedOrigins(builder.Configuration);
 

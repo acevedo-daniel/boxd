@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Boxd.Api.Data;
+using Boxd.Api.Features.Auth.Authorization;
 using Boxd.Api.Features.Auth.Contracts;
 using Boxd.Api.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
@@ -61,7 +62,7 @@ public sealed class AuthService(
         {
             Username = registerDto.Username,
             Email = registerDto.Email,
-            Role = "User"
+            Role = UserRoles.Customer
         };
         user.PasswordHash = passwordHasher.HashPassword(user, registerDto.Password);
 
