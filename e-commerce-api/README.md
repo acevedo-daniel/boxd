@@ -31,21 +31,9 @@ Esta API está diseñada para ser consumida por una SPA moderna y cumple con los
    cd e-commerce-api
    ```
 
-2. **Configura la base de datos y el email:**
-   - Edita `appsettings.json` con tu cadena de conexión y credenciales SMTP:
-     ```json
-     "ConnectionStrings": {
-       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=ECommerceApiDb;Trusted_Connection=true;MultipleActiveResultSets=true"
-     },
-     "SmtpSettings": {
-       "Host": "smtp.gmail.com",
-       "Port": 587,
-       "EnableSsl": true,
-       "User": "tu-email@gmail.com",
-       "Password": "tu-contraseña-o-app-password",
-       "From": "tu-email@gmail.com"
-     }
-     ```
+2. **Configura valores locales sin trackearlos:**
+   - No edites `appsettings.json` ni agregues credenciales al repositorio.
+   - Configura la cadena de conexión y la clave JWT con .NET User Secrets o variables de entorno. Consulta [SECURITY_SETUP.md](SECURITY_SETUP.md) para las claves y los comandos actuales.
 
 3. **Restaura paquetes y aplica migraciones:**
    ```sh

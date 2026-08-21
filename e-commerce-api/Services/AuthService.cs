@@ -35,7 +35,7 @@ namespace e_commerce_api.Services
             }
 
             var token = GenerateJwtToken(user);
-            var expiresAt = DateTime.UtcNow.AddHours(24); // Token expires in 24 hours
+            var expiresAt = DateTime.UtcNow.AddHours(GetJwtExpirationHours());
 
             return new AuthResponseDto
             {
@@ -79,7 +79,7 @@ namespace e_commerce_api.Services
             await _context.SaveChangesAsync();
 
             var token = GenerateJwtToken(user);
-            var expiresAt = DateTime.UtcNow.AddHours(24);
+            var expiresAt = DateTime.UtcNow.AddHours(GetJwtExpirationHours());
 
             return new AuthResponseDto
             {
@@ -93,8 +93,7 @@ namespace e_commerce_api.Services
 
         public string GenerateJwtToken(User user)
         {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"] ?? "your-super-secret-key-with-at-least-32-characters");
+            var key = Encoding.UTF8.GetBytes(GetRequiredJwtSetting("SecretKey"));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -106,10 +105,10 @@ namespace e_commerce_api.Services
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role)
                 }),
-                Expires = DateTime.UtcNow.AddHours(24),
+                Expires = DateTime.UtcNow.AddHours(GetJwtExpirationHours()),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = jwtSettings["Issuer"] ?? "e-commerce-api",
-                Audience = jwtSettings["Audience"] ?? "e-commerce-client"
+                Issuer = GetRequiredJwtSetting("Issuer"),
+                Audience = GetRequiredJwtSetting("Audience")
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -129,6 +128,28 @@ namespace e_commerce_api.Services
             var passwordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
             var passwordSalt = Convert.ToBase64String(hmac.Key);
             return (passwordHash, passwordSalt);
+        }
+
+        private string GetRequiredJwtSetting(string key)
+        {
+            var value = _configuration[$"JwtSettings:{key}"];
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new InvalidOperationException($"Configuration key 'JwtSettings:{key}' is required.");
+            }
+
+            return value;
+        }
+
+        private int GetJwtExpirationHours()
+        {
+            var configuredValue = GetRequiredJwtSetting("ExpirationHours");
+            if (!int.TryParse(configuredValue, out var expirationHours) || expirationHours <= 0)
+            {
+                throw new InvalidOperationException("Configuration key 'JwtSettings:ExpirationHours' must be a positive integer.");
+            }
+
+            return expirationHours;
         }
 
         private string GenerateSecureToken()
@@ -190,4 +211,4 @@ namespace e_commerce_api.Services
             await _context.SaveChangesAsync();
         }
     }
-} 
+}

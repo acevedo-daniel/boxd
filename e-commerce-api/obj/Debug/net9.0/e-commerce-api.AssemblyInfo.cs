@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("boxd-e-commerce-api-development")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("e-commerce-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bba09883ada8d5c907423d86cc545e5bcb1ee74e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+be6ad37a874c574d6c6769b30108b9e4f563f751")]
 [assembly: System.Reflection.AssemblyProductAttribute("e-commerce-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("e-commerce-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

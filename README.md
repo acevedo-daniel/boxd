@@ -1,67 +1,127 @@
-# THE BOX - E-Commerce Fullstack Project
+# BOXD
 
-Este repositorio contiene tanto el backend (API ASP.NET Core) como el frontend (SPA en React + Vite) para la plataforma THE BOX.
+> A curated e-commerce experience for desk setups, peripherals, and workspace technology, being rebuilt from an academic ASP.NET Core + React project.
 
-## 📦 Estructura del repositorio
+BOXD is a full-stack modernization and product-redesign project. The repository currently preserves the original academic implementation as the migration baseline while the product is being redefined around a focused storefront, complete order flow, protected administration experience, and a smaller, maintainable architecture.
 
+The end goal is deliberately dual-purpose: a polished product that can be shown to potential freelance clients and a technically credible .NET project that can be discussed in junior C#/.NET interviews.
+
+## Status
+
+**Phase 0 audit complete; Phase 1 repository/toolchain modernization is next.**
+
+The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
+
+Current code should not be confused with the complete BOXD version 1 scope. See [Project](docs/PROJECT.md) for the accepted product target and [Architecture](docs/ARCHITECTURE.md) for the verified baseline and modernization direction.
+
+## Product direction
+
+BOXD focuses on a small, curated catalogue instead of a general electronics marketplace.
+
+Working catalogue areas:
+
+- Keyboards
+- Pointing
+- Audio
+- Displays
+- Desk
+- Accessories
+
+The target customer journey is intentionally compact:
+
+```text
+Browse -> Product -> Cart -> Demo checkout -> Order -> Order history
 ```
-the-box/
-│
-├── e-commerce-api/      # Backend ASP.NET Core
-│   └── ...              # (código, configs, NOTAS.md, etc.)
-│
-├── e-commerce-spa/      # Frontend React + Vite
-│   └── ...              # (código, configs, README.md, etc.)
-│
-├── README.md            # (este archivo)
-└── .gitignore           # (global o por carpeta)
+
+A separate protected admin experience will manage catalogue, stock, and orders.
+
+## Current baseline
+
+The legacy application currently provides:
+
+- an ASP.NET Core REST API;
+- Entity Framework Core with SQL Server;
+- JWT-based authentication and password recovery;
+- product and category management;
+- QR/Box Club functionality from the academic version;
+- a React SPA built with Vite.
+
+The current domain does **not** yet contain the complete BOXD cart/order workflow. Modernization work will decide what legacy behavior is retained, rewritten, or removed.
+
+## Architecture
+
+Current repository topology:
+
+```text
+e-commerce-spa/      React SPA
+       |
+       | HTTP / JSON
+       v
+e-commerce-api/      ASP.NET Core API
+       |
+       | EF Core
+       v
+SQL Server
 ```
 
-## 🚀 Instalación y ejecución
+The approved modernization direction is a small monorepo with `apps/api` and `apps/web`, a .NET 10 API, a React + TypeScript frontend, feature-oriented organization, explicit authorization boundaries, automated verification, and no unnecessary distributed or enterprise architecture.
 
-1. **Clona el repositorio:**
-   ```sh
-   git clone <url-del-repo>
-   cd the-box
-   ```
+See [Architecture](docs/ARCHITECTURE.md) for the distinction between the current baseline and target constraints.
 
-2. **Configura y ejecuta el backend (API):**
-   ```sh
-   cd e-commerce-api
-   # Edita appsettings.json con tu cadena de conexión y SMTP
-   dotnet restore
-   dotnet ef database update --project e-commerce-api.csproj
-   dotnet run --project e-commerce-api.csproj
-   # La API corre por defecto en http://localhost:5249
-   ```
+## Technology baseline
 
-3. **Configura y ejecuta el frontend (SPA):**
-   ```sh
-   cd ../e-commerce-spa
-   npm install
-   npm run dev
-   # La SPA corre por defecto en http://localhost:5173
-   ```
+- **API:** ASP.NET Core 9, C#, Entity Framework Core 9, SQL Server, JWT authentication, Swagger/OpenAPI.
+- **Web:** React 19, Vite 7, JavaScript/JSX, React Router.
+- **Legacy integrations:** SMTP email and QR generation.
 
-4. **Accede a la app:**
-   - Frontend: [http://localhost:5173](http://localhost:5173)
-   - API/Swagger: [http://localhost:5249/swagger](http://localhost:5249/swagger)
+These are the technologies verified in the repository today. Modernized target versions and dependencies are documented separately and will only move into this section after they are implemented.
 
-## 📝 Configuración requerida
+## Repository structure
 
-- **Cadena de conexión y SMTP:**
-  - Edita `e-commerce-api/appsettings.json` con tu SQL Server y credenciales de email.
-- **CORS:**
-  - Asegúrate de que `AllowedOrigins` en la API permita la URL de la SPA.
-- **URL de la API en la SPA:**
-  - Si cambias el puerto de la API, edita la constante `API_URL` en los archivos de servicios de la SPA.
-- **Datos de ejemplo:**
-  - Usa los comandos SQL en `e-commerce-api/NOTAS.md` para poblar categorías y productos tras migrar la base.
+| Path                   | Responsibility                                                      |
+| ---------------------- | ------------------------------------------------------------------- |
+| `e-commerce-api/`      | Legacy ASP.NET Core API and persistence layer.                      |
+| `e-commerce-spa/`      | Legacy React/Vite SPA.                                              |
+| `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
+| `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
+| `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 
-## 📚 Documentación adicional
-- Lee los README de cada subcarpeta para detalles específicos de la API y la SPA.
-- Consulta `e-commerce-api/NOTAS.md` para tips, comandos SQL y troubleshooting.
+The legacy directory names are temporary and will change only when the modernization roadmap reaches repository restructuring.
 
-## 👨‍💻 Créditos
-- Proyecto desarrollado por Acevedo Mario Daniel y Alan Quenardelle (Universidad Tecnológica Nacional UTN)
-- Uso académico 
+## Local development
+
+### API
+
+```bash
+cd e-commerce-api
+dotnet restore
+dotnet ef database update --project e-commerce-api.csproj
+dotnet run --project e-commerce-api.csproj
+```
+
+Before running the API, provide `ConnectionStrings:DefaultConnection` and `JwtSettings:SecretKey` through .NET User Secrets (development) or environment/secret configuration (deployment). Tracked `appsettings*.json` files are safe templates and intentionally do not contain credentials. See [legacy API security setup](e-commerce-api/SECURITY_SETUP.md) for the exact local configuration keys.
+
+The legacy API is configured to run locally on `http://localhost:5249` by the existing project setup.
+
+### Web
+
+```bash
+cd e-commerce-spa
+npm ci
+npm run dev
+```
+
+The Vite development server uses `http://localhost:5173` by default.
+
+The current application requires local SQL Server and local secret/environment configuration. Legacy password-reset SMTP values are only needed when that legacy endpoint is deliberately exercised; the feature is scheduled for removal in Phase 2.
+
+## Project provenance
+
+BOXD began as **THE BOX**, an academic project developed by Acevedo Mario Daniel and Alan Quenardelle at Universidad Tecnológica Nacional (UTN).
+
+It is now being rebuilt and maintained by Daniel Acevedo as a personal portfolio application. The modernization keeps the original project history visible while replacing academic-era product, architecture, security, and UX decisions where they no longer serve the new product.
+
+## Documentation
+
+- [Project](docs/PROJECT.md) — product purpose, scope, actors, workflows, domain concepts, and durable business rules.
+- [Architecture](docs/ARCHITECTURE.md) — current system boundaries, known baseline concerns, modernization constraints, invariants, and trade-offs.
