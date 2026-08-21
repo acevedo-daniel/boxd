@@ -217,11 +217,13 @@ boxd/
 
 ### 1.3 API upgrade
 
-- [ ] Upgrade .NET 9 -> .NET 10.
-- [ ] Upgrade ASP.NET Core / EF Core packages coherently.
-- [ ] Review third-party dependencies for compatibility and actual need.
+- [x] Upgrade .NET 9 -> .NET 10.
+- [x] Upgrade ASP.NET Core / EF Core packages coherently.
+- [x] Review third-party dependencies for compatibility and actual need.
 - [ ] Remove dependencies supporting rejected legacy functionality when safe.
-- [ ] Resolve meaningful compiler/analyzer issues without suppressing them blindly.
+- [x] Resolve meaningful compiler/analyzer issues without suppressing them blindly.
+
+**Execution record — 2026-08-21:** Upgraded `apps/api/e-commerce-api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server/tools packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
 
 ### 1.4 New web foundation
 

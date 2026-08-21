@@ -39,7 +39,7 @@ Use `docs/ARCHITECTURE.md` as the source of truth for the distinction between **
 ```text
 boxd/
 ├─ apps/
-│  ├─ api/              # legacy ASP.NET Core 9 API
+│  ├─ api/              # legacy ASP.NET Core 10 API
 │  └─ web/              # legacy React/Vite JavaScript SPA
 ├─ docs/
 ├─ .github/

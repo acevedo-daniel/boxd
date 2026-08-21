@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 0 audit complete; Phase 1 repository/toolchain modernization is next.**
+**Phase 1 is in progress: configuration containment, repository hygiene/layout, and the API .NET 10 upgrade are complete.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 
@@ -70,11 +70,11 @@ See [Architecture](docs/ARCHITECTURE.md) for the distinction between the current
 
 ## Technology baseline
 
-- **API:** ASP.NET Core 9, C#, Entity Framework Core 9, SQL Server, JWT authentication, Swagger/OpenAPI.
+- **API:** ASP.NET Core 10, C#, Entity Framework Core 10, SQL Server, JWT authentication, Swagger/OpenAPI.
 - **Web:** React 19, Vite 7, JavaScript/JSX, React Router.
 - **Legacy integrations:** SMTP email and QR generation.
 
-These are the technologies verified in the repository today. Modernized target versions and dependencies are documented separately and will only move into this section after they are implemented.
+These are the technologies verified in the repository today. The API requires a .NET 10 SDK; `global.json` selects the 10.0.400 feature band and accepts its later patches.
 
 ## Repository structure
 
@@ -93,6 +93,8 @@ The applications now occupy their target monorepo paths. Their contents remain l
 ## Local development
 
 ### API
+
+Install a .NET 10 SDK that satisfies the version selection in [`global.json`](global.json) before running these commands.
 
 ```bash
 cd apps/api

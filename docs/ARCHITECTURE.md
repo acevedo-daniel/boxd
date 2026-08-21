@@ -27,7 +27,7 @@ apps/api
 SQL Server
 ```
 
-The API is an ASP.NET Core application targeting .NET 9. It uses Entity Framework Core with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, AutoMapper, repository/service abstractions, SMTP email support, and QR generation.
+The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, AutoMapper, repository/service abstractions, SMTP email support, and QR generation.
 
 The web application is a React 19 SPA built with Vite 7 and JavaScript/JSX. It uses React Router and calls the API through client-side request modules.
 
@@ -99,7 +99,6 @@ The web application currently mixes storefront and administration concerns more 
 
 The modernization roadmap must address verified issues rather than preserve them by default. Important baseline concerns include:
 
-- the API still targets .NET 9;
 - the client is JavaScript rather than TypeScript;
 - the API uses a controller/service/repository chain that may contain redundant abstractions;
 - current authentication configuration includes development-oriented defaults that are not acceptable as final security configuration;
