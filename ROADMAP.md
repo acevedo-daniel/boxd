@@ -220,7 +220,8 @@ boxd/
 - [x] Upgrade .NET 9 -> .NET 10.
 - [x] Upgrade ASP.NET Core / EF Core packages coherently.
 - [x] Review third-party dependencies for compatibility and actual need.
-- [ ] Remove dependencies supporting rejected legacy functionality when safe.
+- [ ] Establish reproducible EF Core CLI tooling: register a compatible local `dotnet-ef` tool and remove `Microsoft.EntityFrameworkCore.Tools` unless Package Manager Console support is deliberately retained.
+- [ ] Remove QRCoder only together with the QR API/persistence retirement in Phase 2.6.
 - [x] Resolve meaningful compiler/analyzer issues without suppressing them blindly.
 
 **Execution record — 2026-08-21:** Upgraded `apps/api/e-commerce-api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server/tools packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
@@ -272,14 +273,13 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - [ ] Remove `GenericRepository<T>` if it only re-wraps EF Core primitives.
 - [ ] Remove service/repository interfaces that do not protect a real boundary.
 - [ ] Keep domain-specific queries/services only where they add useful behavior.
-- [ ] Reassess AutoMapper and remove it if it hides more than it simplifies.
+- [ ] Decide whether to retain AutoMapper: evaluate the simplicity of current mappings, its licensing/deployment configuration, and migrate to explicit mapping if it adds no clear value.
 - [ ] Normalize namespaces/naming around BOXD.
 
 ### 2.2 Configuration and authentication
 
-- [ ] Remove hard-coded JWT secret fallbacks and sensitive defaults.
 - [ ] Establish clear development/test/production configuration boundaries.
-- [ ] Validate required configuration at startup where appropriate.
+- [ ] Preserve and regression-test the Phase 1 configuration-containment guarantees while authentication is refactored.
 - [ ] Replace custom password cryptography with supported platform/library mechanisms.
 - [ ] Apply the Phase 0 user-data decision: create a clean reproducible demo baseline, or implement a staged credential migration with regression tests.
 - [ ] Keep issuer/audience/lifetime validation explicit.
@@ -301,6 +301,7 @@ Turn the legacy API into a small, secure, testable modular application before ad
 - [ ] Do not return raw exception messages in HTTP responses.
 - [ ] Remove repetitive controller error handling where central handling is appropriate.
 - [ ] Establish OpenAPI as the API contract source.
+- [ ] Choose one .NET 10 OpenAPI generation and exploration strategy; do not retain redundant generators or specifications.
 
 ### 2.5 Persistence and test foundation
 
