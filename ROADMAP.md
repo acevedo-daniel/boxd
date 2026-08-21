@@ -60,20 +60,20 @@ Do not implement future phases early. Do not add real payments, reviews, wishlis
 
 ## Phase overview
 
-| Phase | Outcome | Status |
-| --- | --- | --- |
-| 0 | Verified legacy baseline and migration map | [x] |
-| 1 | Clean repository and modern toolchain foundation | [~] |
-| 2 | Secure, simplified API foundation | [ ] |
-| 3 | Defined product UX and frontend foundation | [ ] |
-| 4 | Complete public catalogue slice | [ ] |
-| 5 | Complete identity/account slice | [ ] |
-| 6 | Complete cart/checkout/order slice | [ ] |
-| 7 | Complete administration slice | [ ] |
-| 8 | Quality, security, and reliability hardening | [ ] |
-| 9 | Reproducible public deployment | [ ] |
-| 10 | Portfolio/repository presentation | [ ] |
-| 11 | BOXD v1.0 freeze | [ ] |
+| Phase | Outcome                                          | Status |
+| ----- | ------------------------------------------------ | ------ |
+| 0     | Verified legacy baseline and migration map       | [x]    |
+| 1     | Clean repository and modern toolchain foundation | [~]    |
+| 2     | Secure, simplified API foundation                | [ ]    |
+| 3     | Defined product UX and frontend foundation       | [ ]    |
+| 4     | Complete public catalogue slice                  | [ ]    |
+| 5     | Complete identity/account slice                  | [ ]    |
+| 6     | Complete cart/checkout/order slice               | [ ]    |
+| 7     | Complete administration slice                    | [ ]    |
+| 8     | Quality, security, and reliability hardening     | [ ]    |
+| 9     | Reproducible public deployment                   | [ ]    |
+| 10    | Portfolio/repository presentation                | [ ]    |
+| 11    | BOXD v1.0 freeze                                 | [ ]    |
 
 ---
 
@@ -140,17 +140,17 @@ Classify meaningful legacy pieces as `KEEP`, `REFACTOR`, `REPLACE`, or `REMOVE`,
 
 ### Disposition and migration map
 
-| Legacy area | Disposition | Planned treatment |
-| --- | --- | --- |
-| Product/category HTTP and EF Core behavior | REFACTOR | Keep it only as the catalogue migration baseline; redefine sellability, price, stock, archive, validation, and public-query behavior in Phase 4. |
-| Controller/service/repository/interface chain | REPLACE | Move incrementally to feature-oriented code in Phase 2; retain only domain-specific boundaries that remain useful. |
-| `GenericRepository<T>` | REMOVE | It only wraps `DbContext`/`DbSet` operations. Remove it in Phase 2. |
-| AutoMapper profiles | REASSESS | Use explicit mapping or a smaller mapping boundary unless a concrete Phase 2 use remains. |
-| JWT auth and custom HMAC-SHA512 password storage | REPLACE | Move to supported password hashing, validated configuration, safe errors, and explicit Customer/Admin authorization in Phase 2. |
-| Password reset and SMTP service | REMOVE | Neither is in accepted v1 scope. Remove the endpoints, entities, migrations/dependency configuration, and legacy documentation during Phase 2 after configuration containment. |
-| QR tokens, QRCoder, Box Club pages | REMOVE | They are outside BOXD scope; remove the API, persistence, package, SPA pages/routes, and stale documentation in Phase 2. |
-| Legacy React JavaScript SPA | REPLACE | Build the new TypeScript app in Phase 1 and port only BOXD-relevant behavior. Do not fix legacy lint/style issues that disappear with the replacement. |
-| Legacy API docs, SQL seed scripts, nested CI, `.vs/`, `*.csproj.user` | REMOVE or REPLACE | Preserve only useful setup/domain knowledge in canonical docs; replace manual SQL seeding with reproducible demo data and move CI to root in Phase 1/2. |
+| Legacy area                                                           | Disposition       | Planned treatment                                                                                                                                                                    |
+| --------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Product/category HTTP and EF Core behavior                            | REFACTOR          | Keep it only as the catalogue migration baseline; redefine sellability, price, stock, archive, validation, and public-query behavior in Phase 4.                                     |
+| Controller/service/repository/interface chain                         | REPLACE           | Move incrementally to feature-oriented code in Phase 2; retain only domain-specific boundaries that remain useful.                                                                   |
+| `GenericRepository<T>`                                                | REMOVE            | It only wraps `DbContext`/`DbSet` operations. Remove it in Phase 2.                                                                                                                  |
+| AutoMapper profiles                                                   | REASSESS          | Use explicit mapping or a smaller mapping boundary unless a concrete Phase 2 use remains.                                                                                            |
+| JWT auth and custom HMAC-SHA512 password storage                      | REPLACE           | Move to supported password hashing, validated configuration, safe errors, and explicit Customer/Admin authorization in Phase 2.                                                      |
+| Password reset and SMTP service                                       | REMOVE            | Neither is in accepted v1 scope. Remove the endpoints, entities, migrations/dependency configuration, and legacy documentation during Phase 2 after configuration containment.       |
+| QR tokens, QRCoder, Box Club pages                                    | REMOVE            | They are outside BOXD scope; remove the API, persistence, package, SPA pages/routes, and stale documentation in Phase 2.                                                             |
+| Legacy React JavaScript SPA                                           | REPLACED          | Phase 1.4 replaced it with the TypeScript foundation. Its catalogue/auth/admin behavior was intentionally not carried forward; later vertical slices own the accepted BOXD journeys. |
+| Legacy API docs, SQL seed scripts, nested CI, `.vs/`, `*.csproj.user` | REMOVE or REPLACE | Preserve only useful setup/domain knowledge in canonical docs; replace manual SQL seeding with reproducible demo data and move CI to root in Phase 1/2.                              |
 
 ### Security and domain findings mapped to execution
 
@@ -158,7 +158,7 @@ Classify meaningful legacy pieces as `KEEP`, `REFACTOR`, `REPLACE`, or `REMOVE`,
 - **P0 Phase 2:** `[Authorize]` protects product/category mutations only from anonymous users; it does not require an Administrator role. Any authenticated legacy user can mutate catalogue data. Add explicit server-side Admin policy enforcement and regression tests before re-exposing those endpoints.
 - **P0 Phase 2:** authentication uses custom password cryptography; request DTOs have no declarative validation; product price/stock and category input have no trusted business validation; generic exception handlers return `ex.Message`; and there is no central production exception/problem-details policy.
 - **P1 Phase 2:** QR validation is an anonymous, state-changing `GET`; reset/QR tokens are stored in plaintext; both flows are rejected legacy scope and should be deleted rather than hardened separately.
-- **P1 Phase 4:** the API's public product/category reads are a usable baseline, but the SPA places all catalogue pages behind a local-storage route guard and hard-codes the API URL. Its `page` query parameter also does not match the API's `PageNumber` property. The new public catalogue must not inherit those constraints.
+- **P1 Phase 4:** at audit time, the legacy SPA placed all catalogue pages behind a local-storage route guard and hard-coded the API URL. Its `page` query parameter also did not match the API's `PageNumber` property. That SPA was retired in Phase 1.4; the new public catalogue must not inherit those constraints.
 - **P1 Phase 4/6:** current `Product` permits nullable and unvalidated stock, hard deletion, and mutable prices. The sole initial migration contains no order model or business constraints. Define the target model and use intentional migrations; do not assume legacy data can be carried forward unchanged.
 
 ### Phase 2 decision gate
@@ -229,11 +229,13 @@ boxd/
 
 Do not mechanically convert the legacy JSX UI.
 
-- [ ] Create React + TypeScript + Vite under `apps/web/`.
-- [ ] Configure TypeScript, linting, and build verification.
-- [ ] Establish routing and environment-aware API configuration.
-- [ ] Port only assets/behavior that still belong to BOXD.
-- [ ] Remove the legacy SPA after intentional migration.
+- [x] Create React + TypeScript + Vite under `apps/web/`.
+- [x] Configure TypeScript, linting, and build verification.
+- [x] Establish routing and environment-aware API configuration.
+- [x] Port only assets/behavior that still belong to BOXD.
+- [x] Remove the legacy SPA after intentional migration.
+
+**Execution record — 2026-08-21:** Replaced the legacy JavaScript/JSX SPA with a React + TypeScript + Vite foundation under `apps/web/`. Added strict TypeScript, typecheck/lint/build scripts, a minimal storefront shell with home/not-found routes, and centralized `VITE_API_BASE_URL`/development-proxy configuration. No legacy route or behavior was ported: legacy catalogue behavior is superseded by the Phase 4 vertical slice, legacy account behavior by Phase 5, and QR/Box Club is rejected scope for Phase 2. The only legacy assets were Vite/React placeholders, so none were retained. Clean install, typecheck, lint, and production build pass.
 
 ### 1.5 Root CI
 
@@ -246,9 +248,9 @@ Do not mechanically convert the legacy JSX UI.
 
 ## Documentation
 
-- [ ] Update `ARCHITECTURE.md` so completed structure/runtime changes become current architecture.
-- [ ] Update `AGENTS.md` commands and repository shape.
-- [ ] Update `README.md` status/setup.
+- [x] Update `ARCHITECTURE.md` so completed structure/runtime changes become current architecture.
+- [x] Update `AGENTS.md` commands and repository shape.
+- [x] Update `README.md` status/setup.
 - [ ] Create `docs/DEVELOPMENT.md` only if local workflow no longer fits cleanly in README.
 
 ## Exit criteria
@@ -657,7 +659,7 @@ Replace the transitional README with verified evidence:
 
 - [ ] BOXD identity and factual one-line description.
 - [ ] concise overview and live demo;
-- [ ] 2–4 strong screenshots;
+- [ ] 5 strong screenshots;
 - [ ] key capabilities;
 - [ ] 3–5 meaningful engineering highlights;
 - [ ] high-level architecture and stack;

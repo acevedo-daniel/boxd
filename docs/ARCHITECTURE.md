@@ -29,13 +29,13 @@ SQL Server
 
 The API is an ASP.NET Core application targeting .NET 10. It uses Entity Framework Core 10 with SQL Server, controller-based HTTP endpoints, JWT bearer authentication, AutoMapper, repository/service abstractions, SMTP email support, and QR generation.
 
-The web application is a React 19 SPA built with Vite 7 and JavaScript/JSX. It uses React Router and calls the API through client-side request modules.
+The web application is a React 19 + TypeScript SPA built with Vite 7. It uses React Router, a storefront layout boundary, and a centralized environment-aware HTTP client foundation. Its current routes intentionally contain only the BOXD home and not-found states; catalogue, identity, cart, and administration remain later vertical slices.
 
 ### Current component boundaries
 
 | Component / area | Owns | Boundary |
 | --- | --- | --- |
-| `apps/web/` | Browser UI, routing, local authentication state, customer/admin pages, API calls | Must not access SQL Server directly or enforce trusted authorization rules. |
+| `apps/web/` | Browser UI, routing, storefront layout, and centralized API configuration/client code | Must not access SQL Server directly or enforce trusted authorization rules. |
 | `apps/api/` | HTTP API, authentication, product/category behavior, persistence coordination, email/QR behavior | Owns server-side authorization and persistent business state. |
 | SQL Server | Relational persistent data managed through EF Core migrations | Must be accessed through the API application, not from the browser. |
 | SMTP integration | Password-recovery email delivery in the legacy implementation | External delivery failure must not expose credentials or internal configuration. |
@@ -73,7 +73,7 @@ The current model does not yet contain the target BOXD cart/order domain require
 ### Current integration flow
 
 ```text
-React SPA
+React TypeScript SPA
    -> REST/JSON
 ASP.NET Core controllers
    -> services
@@ -88,18 +88,17 @@ Additional legacy flows include SMTP-based password recovery and QR token genera
 
 - **Rendering:** client-side React SPA.
 - **Routing:** React Router.
-- **Language:** JavaScript/JSX.
-- **API access:** browser request modules under `src/api/`.
-- **Authentication state:** JWT-based client state in the legacy application.
-- **Styling:** local CSS plus substantial page/component styling in the existing implementation.
+- **Language:** TypeScript/TSX with strict compiler configuration.
+- **API access:** `src/config/environment.ts` centralizes the browser API base URL and `src/api/client.ts` provides typed request plumbing.
+- **Current routes:** BOXD home and not-found states only; no legacy auth, QR, customer, or admin route was carried forward.
+- **Styling:** a small responsive storefront shell stylesheet under `src/styles/`.
 
-The web application currently mixes storefront and administration concerns more than the target BOXD product should.
+The web foundation has a storefront layout boundary. An administration layout will be introduced separately with its server-side authorization work in later phases.
 
 ## Known baseline issues
 
 The modernization roadmap must address verified issues rather than preserve them by default. Important baseline concerns include:
 
-- the client is JavaScript rather than TypeScript;
 - the API uses a controller/service/repository chain that may contain redundant abstractions;
 - current authentication configuration includes development-oriented defaults that are not acceptable as final security configuration;
 - authorization boundaries need to be enforced explicitly for administrator operations;
@@ -110,8 +109,6 @@ The modernization roadmap must address verified issues rather than preserve them
 - the API has no application test project or central production exception/problem-details policy;
 - the current domain stops at catalogue/authentication behavior and is not yet a complete e-commerce order flow;
 - the GitHub Actions workflow is now at repository root but still needs valid target-path quality gates in Phase 1.5;
-- the frontend contains hard-coded local API assumptions that must become environment-aware configuration.
-- legacy SPA catalogue routes are protected by a local-storage route guard even though BOXD requires visitor browsing.
 
 This list is intentionally architectural rather than a complete audit. The roadmap/audit phase may discover additional implementation defects.
 

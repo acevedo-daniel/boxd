@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 1 is in progress: configuration containment, repository hygiene/layout, and the API .NET 10 upgrade are complete.**
+**Phase 1 is in progress: configuration containment, repository hygiene/layout, API .NET 10 upgrade, and the TypeScript web foundation are complete.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 
@@ -44,7 +44,7 @@ The legacy application currently provides:
 - JWT-based authentication and password recovery;
 - product and category management;
 - QR/Box Club functionality from the academic version;
-- a React SPA built with Vite.
+- a React + TypeScript + Vite foundation with a minimal storefront shell.
 
 The current domain does **not** yet contain the complete BOXD cart/order workflow. Modernization work will decide what legacy behavior is retained, rewritten, or removed.
 
@@ -53,7 +53,7 @@ The current domain does **not** yet contain the complete BOXD cart/order workflo
 Current repository topology:
 
 ```text
-apps/web/            Legacy React SPA
+apps/web/            React + TypeScript foundation
        |
        | HTTP / JSON
        v
@@ -71,7 +71,7 @@ See [Architecture](docs/ARCHITECTURE.md) for the distinction between the current
 ## Technology baseline
 
 - **API:** ASP.NET Core 10, C#, Entity Framework Core 10, SQL Server, JWT authentication, Swagger/OpenAPI.
-- **Web:** React 19, Vite 7, JavaScript/JSX, React Router.
+- **Web:** React 19, TypeScript, Vite 7, React Router.
 - **Legacy integrations:** SMTP email and QR generation.
 
 These are the technologies verified in the repository today. The API requires a .NET 10 SDK; `global.json` selects the 10.0.400 feature band and accepts its later patches.
@@ -81,14 +81,14 @@ These are the technologies verified in the repository today. The API requires a 
 | Path                   | Responsibility                                                      |
 | ---------------------- | ------------------------------------------------------------------- |
 | `apps/api/`            | Legacy ASP.NET Core API and persistence layer.                      |
-| `apps/web/`            | Legacy React/Vite SPA.                                              |
+| `apps/web/`            | React/TypeScript/Vite web foundation and future storefront/admin UI. |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
 | `.github/workflows/`   | Repository-level CI workflows; quality gates are refined in Phase 1.5. |
 | `ROADMAP.md`           | Execution order, audit findings, and completion state.              |
 | `AGENTS.md`            | Repository instructions and guardrails for coding agents.           |
 
-The applications now occupy their target monorepo paths. Their contents remain legacy until the later API and web modernization tasks replace them intentionally.
+The applications now occupy their target monorepo paths. The API remains legacy; the web application is a typed foundation awaiting its catalogue, identity, cart, and administration vertical slices.
 
 ## Local development
 
@@ -122,6 +122,8 @@ The legacy API is configured to run locally on `http://localhost:5249` by the ex
 ```bash
 cd apps/web
 npm ci
+npm run typecheck
+npm run lint
 npm run dev
 ```
 
