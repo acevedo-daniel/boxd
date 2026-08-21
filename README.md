@@ -97,6 +97,7 @@ The applications now occupy their target monorepo paths. Their contents remain l
 Install a .NET 10 SDK that satisfies the version selection in [`global.json`](global.json) before running these commands.
 
 ```bash
+dotnet tool restore
 cd apps/api
 dotnet restore
 dotnet ef database update --project e-commerce-api.csproj

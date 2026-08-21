@@ -148,7 +148,7 @@ Classify meaningful legacy pieces as `KEEP`, `REFACTOR`, `REPLACE`, or `REMOVE`,
 | AutoMapper profiles | REASSESS | Use explicit mapping or a smaller mapping boundary unless a concrete Phase 2 use remains. |
 | JWT auth and custom HMAC-SHA512 password storage | REPLACE | Move to supported password hashing, validated configuration, safe errors, and explicit Customer/Admin authorization in Phase 2. |
 | Password reset and SMTP service | REMOVE | Neither is in accepted v1 scope. Remove the endpoints, entities, migrations/dependency configuration, and legacy documentation during Phase 2 after configuration containment. |
-| QR tokens, QRCoder, Box Club pages | REMOVE | They are outside BOXD scope; remove the API, persistence, package, SPA pages/routes, and stale documentation in Phase 2/Phase 1 migration work. |
+| QR tokens, QRCoder, Box Club pages | REMOVE | They are outside BOXD scope; remove the API, persistence, package, SPA pages/routes, and stale documentation in Phase 2. |
 | Legacy React JavaScript SPA | REPLACE | Build the new TypeScript app in Phase 1 and port only BOXD-relevant behavior. Do not fix legacy lint/style issues that disappear with the replacement. |
 | Legacy API docs, SQL seed scripts, nested CI, `.vs/`, `*.csproj.user` | REMOVE or REPLACE | Preserve only useful setup/domain knowledge in canonical docs; replace manual SQL seeding with reproducible demo data and move CI to root in Phase 1/2. |
 
@@ -220,11 +220,10 @@ boxd/
 - [x] Upgrade .NET 9 -> .NET 10.
 - [x] Upgrade ASP.NET Core / EF Core packages coherently.
 - [x] Review third-party dependencies for compatibility and actual need.
-- [ ] Establish reproducible EF Core CLI tooling: register a compatible local `dotnet-ef` tool and remove `Microsoft.EntityFrameworkCore.Tools` unless Package Manager Console support is deliberately retained.
-- [ ] Remove QRCoder only together with the QR API/persistence retirement in Phase 2.6.
+- [x] Establish reproducible EF Core CLI tooling: register a compatible local `dotnet-ef` tool and remove `Microsoft.EntityFrameworkCore.Tools`; Package Manager Console support is not retained.
 - [x] Resolve meaningful compiler/analyzer issues without suppressing them blindly.
 
-**Execution record — 2026-08-21:** Upgraded `apps/api/e-commerce-api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server/tools packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
+**Execution record — 2026-08-21:** Upgraded `apps/api/e-commerce-api.csproj` to `net10.0` and aligned the JWT bearer and EF Core design/SQL Server packages to 10.0.11. Added root `global.json` (SDK 10.0.400 with later-patch roll-forward) for reproducible SDK selection. Registered `dotnet-ef` 10.0.11 in the root tool manifest and removed `Microsoft.EntityFrameworkCore.Tools`, because the documented workflow uses the cross-platform EF CLI rather than Visual Studio Package Manager Console. Removed the unused direct `Microsoft.AspNetCore.OpenApi` package and replaced the discontinued `AutoMapper.Extensions.Microsoft.DependencyInjection` package with the supported AutoMapper 16.2.0 core registration, eliminating its vulnerable AutoMapper 12 transitive dependency. Updated QRCoder, Swashbuckle, and `System.IdentityModel.Tokens.Jwt` after compatibility review. QR and SMTP functionality remain active legacy code and cannot safely have their supporting code/dependencies removed before their scheduled Phase 2 retirement. The API restores and builds without warnings or errors on .NET 10.
 
 ### 1.4 New web foundation
 
@@ -313,7 +312,7 @@ Turn the legacy API into a small, secure, testable modular application before ad
 
 ### 2.6 Retire rejected legacy flows
 
-- [ ] Remove QR token API/persistence, QRCoder, Box Club UI/routes, and their stale documentation instead of carrying a separate security surface into BOXD.
+- [ ] Remove QR token API/persistence, QRCoder, Box Club UI/routes, and their stale documentation instead of carrying a separate security surface into BOXD. This includes the dependency-retirement work formerly listed under Phase 1.3.
 
 ## Documentation
 
