@@ -8,7 +8,7 @@ The end goal is deliberately dual-purpose: a polished product that can be shown 
 
 ## Status
 
-**Phase 1 is complete: configuration containment, repository hygiene/layout, API .NET 10 upgrade, TypeScript web foundation, and root CI gates are verified.**
+**Phase 2.2 is complete: the API has explicit environment configuration validation, standard Identity password hashing, and no password-recovery/SMTP flow.**
 
 The repository still contains the legacy `THE BOX` implementation. The BOXD product definition and modernization constraints are documented, and the legacy baseline has been audited before implementation work begins.
 
@@ -41,7 +41,7 @@ The legacy application currently provides:
 
 - an ASP.NET Core REST API;
 - Entity Framework Core with SQL Server;
-- JWT-based authentication and password recovery;
+- JWT-based authentication;
 - product and category management;
 - QR/Box Club functionality from the academic version;
 - a React + TypeScript + Vite foundation with a minimal storefront shell.
@@ -72,7 +72,7 @@ See [Architecture](docs/ARCHITECTURE.md) for the distinction between the current
 
 - **API:** ASP.NET Core 10, C#, Entity Framework Core 10, SQL Server, JWT authentication, Swagger/OpenAPI.
 - **Web:** React 19, TypeScript, Vite 7, React Router.
-- **Legacy integrations:** SMTP email and QR generation.
+- **Legacy integration:** QR generation, scheduled for removal in Phase 2.6.
 
 These are the technologies verified in the repository today. The API requires a .NET 10 SDK; `global.json` selects the 10.0.400 feature band and accepts its later patches.
 
@@ -82,6 +82,7 @@ These are the technologies verified in the repository today. The API requires a 
 | ---------------------- | ------------------------------------------------------------------- |
 | `apps/api/`            | Legacy ASP.NET Core API and persistence layer.                      |
 | `apps/web/`            | React/TypeScript/Vite web foundation and future storefront/admin UI. |
+| `tests/Boxd.Api.Tests/` | Focused configuration-containment and password-hashing unit tests. |
 | `docs/PROJECT.md`      | BOXD product scope, workflows, domain concepts, and business rules. |
 | `docs/ARCHITECTURE.md` | Current technical baseline and approved modernization constraints.  |
 | `.github/workflows/`   | Repository-level CI: API restore/Release build and web frozen install/typecheck/lint/build gates. |
@@ -104,7 +105,7 @@ dotnet ef database update --project Boxd.Api.csproj
 dotnet run --project Boxd.Api.csproj
 ```
 
-Before applying migrations or running the API, provide `ConnectionStrings:DefaultConnection` and `JwtSettings:SecretKey` through .NET User Secrets (development) or environment/secret configuration (deployment). Tracked `appsettings*.json` files are safe templates and intentionally do not contain credentials.
+Configuration is deliberately layered by environment. `appsettings.json` contains only safe shared settings; `appsettings.Development.json` and `appsettings.Testing.json` contain non-secret local/test defaults. Development requires `ConnectionStrings:DefaultConnection` and `JwtSettings:SecretKey` through .NET User Secrets. Production requires its connection string, signing key, explicit allowed origins, and any retained QR base URL through provider-managed environment/secret configuration. Tracked runtime configuration never contains credentials.
 
 For local development, run from `apps/api/`:
 
@@ -113,9 +114,16 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<local SQL Server
 dotnet user-secrets set "JwtSettings:SecretKey" "<random signing key of at least 32 bytes>"
 ```
 
-The legacy password-recovery endpoint additionally requires `SmtpSettings:Host`, `SmtpSettings:User`, `SmtpSettings:Password`, and `SmtpSettings:From` through the same secret/environment mechanism. That feature is scheduled for removal in Phase 2.
-
 The legacy API is configured to run locally on `http://localhost:5249` by the existing project setup.
+
+### API verification
+
+```bash
+cd apps/api
+dotnet test Boxd.Api.sln --configuration Release
+```
+
+The current tests cover configuration containment/validation and supported password hashing. PostgreSQL-backed API integration tests and their CI gate are scheduled for Phase 2.5.
 
 ### Web
 
@@ -129,7 +137,7 @@ corepack pnpm run dev
 
 The Vite development server uses `http://localhost:5173` by default.
 
-The current application requires local SQL Server and local secret/environment configuration. Legacy password-reset SMTP values are only needed when that legacy endpoint is deliberately exercised; the feature is scheduled for removal in Phase 2.
+The current application requires local SQL Server and local secret/environment configuration. Legacy SQL Server data will not be preserved when PostgreSQL replaces the provider in Phase 2.5; the replacement will use a clean reproducible BOXD demo baseline.
 
 ## Project provenance
 

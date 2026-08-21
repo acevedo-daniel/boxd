@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Boxd.Api</RootNamespace>
-    <UserSecretsId>boxd-e-commerce-api-development</UserSecretsId>
+    <UserSecretsId>boxd-api-development</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

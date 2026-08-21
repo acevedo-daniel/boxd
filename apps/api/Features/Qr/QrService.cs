@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Boxd.Api.Data;
+using Boxd.Api.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
 
@@ -75,7 +76,7 @@ namespace Boxd.Api.Features.Qr
 
         public string GetQrTokenUrl(string token)
         {
-            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7000";
+            var baseUrl = ApiConfiguration.GetRequiredValue(_configuration, "AppSettings:BaseUrl");
             return $"{baseUrl}/api/qr/validate/{token}";
         }
 
